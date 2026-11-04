@@ -94,14 +94,10 @@
     .theme .i-sun, [data-theme="dark"] .theme .i-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
     [data-theme="dark"] .theme .i-sun { opacity: 1; transform: none; }
 
-    /* Theme switch: the new theme grows out of the button as a sphere while the old page dims. */
-    ::view-transition-old(root), ::view-transition-new(root) {
-      animation: none; mix-blend-mode: normal;
-    }
-    ::view-transition-old(root) { z-index: 1; }
-    /* Colours swap in one frame during the switch; per element fades would lag behind the sphere. */
+    /* Theme switch: a disco ball wall of mirror tiles covers the page, the colours swap underneath in one
+       frame (per element fades would show through the gaps), then the tiles spin away. */
     .theming *, .theming *::before, .theming *::after { transition: none !important; }
-    ::view-transition-new(root) { z-index: 2; }
+    .disco { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }
 
     .hero { padding: 64px 0 48px; }
     .hero h1 {
@@ -394,29 +390,105 @@
     };
     label();
 
+    const BG = { light: [245, 244, 240], dark: [24, 24, 24] };
+    const ACCENT = [232, 73, 47];
+    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+    const rgb = (c) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    const easeOut = (t) => 1 - (1 - t) ** 3;
+
+    /* Mirror tiles in the new theme's colour spin in from (ox, oy) until they cover the page, then
+       swap() runs under them and they spin away in the same order, revealing the new page. */
+    function disco(next, ox, oy, swap, done) {
+      const W = innerWidth, H = innerHeight, S = 32;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const canvas = document.createElement("canvas");
+      canvas.className = "disco";
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      document.body.append(canvas);
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+
+      const base = BG[next];
+      const far = Math.hypot(Math.max(ox, W - ox), Math.max(oy, H - oy));
+      const tiles = [];
+      for (let y = 0; y < H; y += S) {
+        for (let x = 0; x < W; x += S) {
+          const d = Math.hypot(x + S / 2 - ox, y + S / 2 - oy) / far;
+          tiles.push({
+            x, y,
+            at: d * 0.8 + Math.random() * 0.2,      // when it starts, 0 to 1 across the sweep
+            spin: (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.6),
+            shade: (Math.random() - 0.5) * 0.14,    // each facet catches the light differently
+            tint: Math.random() < 0.06,             // a few reflect the accent
+            glint: Math.random() < 0.05,            // and a few flash
+          });
+        }
+      }
+
+      const PHASE = 560, TILE = 0.38; // ms per phase; each tile moves for this share of it
+      let start, swapped = false;
+
+      const draw = (t, coming) => {
+        ctx.clearRect(0, 0, W, H);
+        for (const tile of tiles) {
+          const p = Math.min(1, Math.max(0, (t - tile.at * (1 - TILE)) / TILE));
+          const s = coming ? easeOut(p) : 1 - easeOut(p);
+          if (s <= 0) continue;
+          const moving = p > 0 && p < 1;
+          const flash = Math.sin(p * Math.PI); // 0 at rest, 1 halfway through the spin
+          let c = mix(base, tile.shade > 0 ? [255, 255, 255] : [0, 0, 0], Math.abs(tile.shade) * (moving ? 1 : 0.25));
+          if (tile.tint) c = mix(c, ACCENT, 0.45 * flash);
+          if (tile.glint) c = mix(c, [255, 255, 255], 0.55 * flash);
+          ctx.fillStyle = rgb(c);
+          if (s >= 1) { ctx.fillRect(tile.x, tile.y, S + 1, S + 1); continue; } // settled tiles close the gaps
+          const size = (S - 2) * s;
+          ctx.save();
+          ctx.translate(tile.x + S / 2, tile.y + S / 2);
+          ctx.rotate((1 - s) * tile.spin);
+          ctx.fillRect(-size / 2, -size / 2, size, size);
+          if (tile.glint && flash > 0.3) {                // a four point sparkle on the flashing facets
+            const r = S * 0.5 * flash;
+            ctx.fillStyle = `rgba(255, 255, 255, ${(coming ? 0.9 : 0.6) * flash})`;
+            ctx.beginPath();
+            ctx.moveTo(0, -r); ctx.lineTo(r * 0.14, -r * 0.14); ctx.lineTo(r, 0); ctx.lineTo(r * 0.14, r * 0.14);
+            ctx.lineTo(0, r); ctx.lineTo(-r * 0.14, r * 0.14); ctx.lineTo(-r, 0); ctx.lineTo(-r * 0.14, -r * 0.14);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      };
+
+      const frame = (now) => {
+        start ??= now;
+        const t = (now - start) / PHASE;
+        if (t < 1) draw(t, true);
+        else {
+          if (!swapped) { swapped = true; draw(1, true); swap(); }
+          if (t < 2) draw(t - 1, false);
+          else { canvas.remove(); return done(); }
+        }
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    }
+
+    let busy = false;
     toggle.addEventListener("click", () => {
+      if (busy) return;
       const next = root.dataset.theme === "dark" ? "light" : "dark";
-      const swap = () => { root.dataset.theme = next; label(); };
-      root.classList.add("theming");
-      const settle = () => requestAnimationFrame(() => root.classList.remove("theming"));
+      const swap = () => {
+        root.classList.add("theming");
+        root.dataset.theme = next;
+        label();
+        requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("theming")));
+      };
       try { localStorage.setItem("theme", next); } catch {}
-      if (!document.startViewTransition || still.matches) { swap(); return settle(); }
+      if (still.matches) return swap();
 
+      busy = true;
       const box = toggle.getBoundingClientRect();
-      const x = box.left + box.width / 2, y = box.top + box.height / 2;
-      const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-
-      const transition = document.startViewTransition(swap);
-      transition.finished.finally(settle);
-      transition.ready.then(() => {
-        const timing = { duration: 900, easing: "cubic-bezier(0.65, 0, 0.35, 1)" }; // slow start so the circle reads, then settles
-        // Only the clip moves: any scale here would misalign the new page against the old at the edge.
-        root.animate({
-          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`],
-        }, { ...timing, pseudoElement: "::view-transition-new(root)" });
-        // The old page only dims: scaling it down would uncover its edges.
-        root.animate({ filter: ["brightness(1)", "brightness(0.7)"] }, { ...timing, pseudoElement: "::view-transition-old(root)" });
-      });
+      disco(next, box.left + box.width / 2, box.top + box.height / 2, swap, () => { busy = false; });
     });
   </script>
 </body>
