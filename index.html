@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>30 tools in 30 days · preacherxp</title>
+  <meta name="description" content="A tool building challenge: one new open source tool every day of November 2026, tracked on a calendar.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="30 tools in 30 days">
+  <meta property="og:description" content="One new open source tool every day of November 2026.">
+  <meta property="og:url" content="https://preacherxp.github.io/30-days-of-tools/">
+  <meta property="og:image" content="https://preacherxp.github.io/30-days-of-tools/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f0;
+      --card: #ffffff;
+      --ink: #111111;
+      --muted: #6b6b6b;
+      --faint: #a3a19b;
+      --line: #e3e1da;
+      --accent: #e8492f;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --mono: "Geist Mono", ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 400 16px/24px "Geist", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .skip {
+      position: absolute; left: 16px; top: -64px;
+      padding: 8px 12px; border-radius: 8px;
+      background: var(--ink); color: var(--bg); font-weight: 600; text-decoration: none;
+    }
+    .skip:focus { top: 16px; }
+
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+    header.top {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 0;
+      font-size: 14px; line-height: 20px;
+    }
+    .handle { font-family: var(--mono); color: var(--muted); text-decoration: none; }
+    .handle b { color: var(--ink); font-weight: 500; }
+    .gh {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px;
+      border: 1px solid var(--line); background: var(--card);
+      font-weight: 600; text-decoration: none;
+      transition: transform 300ms var(--ease), border-color 300ms var(--ease);
+    }
+    .gh:hover { border-color: var(--faint); transform: translateY(-1px); }
+    .gh:active { transform: scale(0.98); }
+    .gh svg { width: 16px; height: 16px; }
+
+    .hero { padding: 64px 0 48px; }
+    .hero h1 {
+      margin: 0; max-width: 680px;
+      font-size: 72px; line-height: 1; font-weight: 700; letter-spacing: -0.03em;
+      background: linear-gradient(90deg, #000000, #666666);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-wrap: balance;
+    }
+    .hero p {
+      margin: 24px 0 0; max-width: 680px;
+      font-size: 20px; line-height: 28px; color: var(--muted);
+      text-wrap: pretty;
+    }
+
+    .stats {
+      display: grid; grid-template-columns: auto 1fr; gap: 24px 48px; align-items: end;
+      padding: 32px 0 48px;
+    }
+    .numbers { display: flex; gap: 40px; }
+    .num b {
+      display: block; font-family: var(--mono); font-weight: 500;
+      font-size: 36px; line-height: 40px; letter-spacing: -0.02em;
+    }
+    .num span { font-size: 14px; line-height: 20px; color: var(--muted); }
+    .num.hot b { color: var(--accent); }
+    .bar { display: grid; grid-template-columns: repeat(30, 1fr); gap: 4px; padding-bottom: 8px; }
+    .bar i {
+      height: 32px; border-radius: 4px; background: var(--line);
+      transform-origin: bottom;
+    }
+    .bar i.done { background: var(--ink); }
+    .bar i.now { background: var(--accent); }
+
+    .cal-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: 24px; gap: 16px; flex-wrap: wrap;
+    }
+    .cal-head h2 { margin: 0; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; }
+    .cal-head h2 span { color: var(--faint); font-family: var(--mono); font-weight: 400; }
+    .legend { display: flex; gap: 24px; font-size: 14px; line-height: 20px; color: var(--muted); }
+    .legend span { display: inline-flex; align-items: center; gap: 8px; }
+    .legend i { width: 12px; height: 12px; border-radius: 4px; }
+    .legend .l-done { background: var(--ink); }
+    .legend .l-now { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+    .legend .l-next { background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+
+    .weekdays, .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+    .weekdays {
+      padding-bottom: 12px;
+      font-family: var(--mono); font-size: 12px; line-height: 16px;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint);
+    }
+    .weekdays span { padding-left: 12px; }
+    .grid { list-style: none; margin: 0; padding: 0; }
+    .slot { display: flex; }
+    .slot > .cell { flex: 1; }
+
+    .cell {
+      position: relative; display: flex; flex-direction: column;
+      min-height: 128px; border-radius: 12px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--line);
+      text-decoration: none;
+      animation: rise 700ms var(--ease) both;
+      transition: transform 500ms var(--ease), border-color 300ms var(--ease), box-shadow 500ms var(--ease);
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(32px); } }
+    .cell.blank { background: transparent; border: 1px dashed var(--line); opacity: 0.6; }
+    .cell-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 12px;
+      font-family: var(--mono);
+    }
+    .date { font-size: 24px; line-height: 32px; font-weight: 500; letter-spacing: -0.02em; }
+    .day { font-size: 12px; line-height: 16px; color: var(--faint); }
+
+    .shipped { min-height: 232px; }
+    .upcoming { background: transparent; }
+    .upcoming .date { color: var(--faint); }
+    .upcoming .day { color: var(--line); }
+    .upcoming .hint {
+      margin-top: auto; padding: 12px;
+      font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--faint);
+    }
+
+    .today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .today .date, .today .day { color: var(--accent); }
+    .today.upcoming { background: var(--card); }
+    .today .hint { color: var(--accent); }
+    .today .hint::before {
+      content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px;
+      border-radius: 50%; background: var(--accent); vertical-align: 1px;
+    }
+
+    .thumb { position: relative; flex: 1; min-height: 112px; margin: 0 12px; border-radius: 4px; overflow: hidden; background: #ffffff; }
+    .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 500ms var(--ease); }
+    .thumb.contain img { object-fit: contain; }
+    .thumb.cover { background: #0d1117; }
+    .thumb.cover img { object-fit: cover; object-position: 0 50%; }
+    .meta { padding: 12px; }
+    .meta strong { display: block; font-size: 14px; line-height: 20px; font-weight: 600; }
+    .meta span { display: block; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .blurb {
+      position: absolute; inset: auto 0 0 0; margin: 0;
+      padding: 16px 12px 12px;
+      background: var(--ink); color: #ffffff;
+      font-size: 14px; line-height: 20px; text-wrap: pretty;
+      transform: translateY(100%);
+      transition: transform 500ms var(--ease);
+    }
+    .blurb::after { content: " ↗"; color: var(--accent); }
+    .shipped:hover, .shipped:focus-visible { border-color: var(--faint); box-shadow: 0 16px 32px -16px rgba(17, 17, 17, 0.25); }
+    .shipped:hover .blurb, .shipped:focus-visible .blurb { transform: none; }
+    .shipped:hover .thumb img { transform: scale(1.04); }
+    .shipped:active { transform: scale(0.98); }
+
+    footer {
+      display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
+      margin-top: 96px; padding: 32px 0 48px; border-top: 1px solid var(--line);
+      font-size: 14px; line-height: 20px; color: var(--muted);
+    }
+    footer img { display: block; height: 40px; }
+
+    noscript ul { padding-left: 24px; }
+
+    @media (max-width: 960px) {
+      .wrap { padding: 0 24px; }
+      .hero h1 { font-size: 60px; }
+      .stats { grid-template-columns: 1fr; }
+      .shipped { min-height: 200px; }
+      .meta span { display: none; }
+    }
+    @media (max-width: 720px) {
+      .hero { padding: 40px 0 32px; }
+      .hero h1 { font-size: 48px; }
+      .hero p { font-size: 18px; }
+      .numbers { gap: 32px; }
+      .num b { font-size: 30px; line-height: 36px; }
+      .bar i { height: 24px; }
+      .weekdays { display: none; }
+      .grid { grid-template-columns: 1fr; gap: 8px; }
+      .cell, .shipped { min-height: 0; }
+      .cell.blank { display: none; }
+      .upcoming { flex-direction: row; align-items: center; }
+      .upcoming .cell-head { flex: 1; gap: 16px; justify-content: flex-start; padding: 8px 12px; }
+      .upcoming .date { font-size: 18px; line-height: 28px; }
+      .upcoming .hint { margin: 0; padding: 8px 12px; }
+      .shipped { display: grid; grid-template-columns: 112px 1fr; grid-template-rows: auto 1fr; }
+      .shipped .cell-head { grid-column: 1 / -1; }
+      .shipped .thumb { margin: 0 0 12px 12px; min-height: 84px; }
+      .shipped .meta { padding: 0 12px 12px; }
+      .meta span { display: block; white-space: normal; }
+      .blurb { position: static; transform: none; background: none; color: var(--muted); padding: 4px 0 0; }
+      .shipped .meta .blurb { display: block; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cell { animation-name: fade; }
+      @keyframes fade { from { opacity: 0; } }
+      .thumb img, .blurb { transition: none; }
+      .shipped:hover .thumb img { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#calendar">Skip to the calendar</a>
+  <div class="wrap">
+    <header class="top">
+      <a class="handle" href="https://github.com/preacherxp"><b>preacherxp</b> / 30 days of tools</a>
+      <a class="gh" href="https://github.com/preacherxp/30-days-of-tools">
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.31 75.68A59.78 59.78 0 0 0 202.93 28a8 8 0 0 0-6.93-4a59.75 59.75 0 0 0-48 24h-24a59.75 59.75 0 0 0-48-24a8 8 0 0 0-6.93 4a59.78 59.78 0 0 0-5.38 47.68A58.14 58.14 0 0 0 56 104v8a56.06 56.06 0 0 0 48.44 55.47A39.8 39.8 0 0 0 96 192v8H72a24 24 0 0 1-24-24a40 40 0 0 0-40-40a8 8 0 0 0 0 16a24 24 0 0 1 24 24a40 40 0 0 0 40 40h24v16a8 8 0 0 0 16 0v-40a24 24 0 0 1 48 0v40a8 8 0 0 0 16 0v-40a39.8 39.8 0 0 0-8.44-24.53A56.06 56.06 0 0 0 216 112v-8a58.14 58.14 0 0 0-7.69-28.32ZM200 112a40 40 0 0 1-40 40h-48a40 40 0 0 1-40-40v-8a41.74 41.74 0 0 1 6.9-22.48a8 8 0 0 0 1.1-7.69a43.81 43.81 0 0 1 .79-33.58a43.88 43.88 0 0 1 32.32 20.06a8 8 0 0 0 6.71 3.69h32.35a8 8 0 0 0 6.74-3.69a43.87 43.87 0 0 1 32.32-20.06a43.81 43.81 0 0 1 .77 33.58a8.09 8.09 0 0 0 1 7.65a41.72 41.72 0 0 1 7 22.52Z"/></svg>
+        Source
+      </a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>30 tools<br>in 30 days</h1>
+        <p>A tool building challenge: one new open source tool every day of November 2026. Each day on the calendar links to the repo.</p>
+      </section>
+
+      <section class="stats" aria-label="Progress">
+        <div class="numbers">
+          <div class="num"><b id="n-shipped">0</b><span>shipped</span></div>
+          <div class="num hot"><b id="n-day">0</b><span>day of 30</span></div>
+          <div class="num"><b id="n-left">30</b><span>to go</span></div>
+        </div>
+        <div class="bar" id="bar" aria-hidden="true"></div>
+      </section>
+
+      <section id="calendar" aria-labelledby="cal-title">
+        <div class="cal-head">
+          <h2 id="cal-title">November <span>2026</span></h2>
+          <div class="legend" aria-hidden="true">
+            <span><i class="l-done"></i>Shipped</span>
+            <span><i class="l-now"></i>Today</span>
+            <span><i class="l-next"></i>Coming up</span>
+          </div>
+        </div>
+        <div class="weekdays" aria-hidden="true">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <ol class="grid" id="grid" role="list"></ol>
+        <noscript>
+          <ul>
+            <li><a href="https://github.com/preacherxp/opencode-answer">Day 1: OpenCode Answer</a></li>
+            <li><a href="https://github.com/preacherxp/flokque-aloft">Day 2: Flokque Aloft</a></li>
+            <li><a href="https://github.com/preacherxp/element-snap">Day 3: Element Snap</a></li>
+            <li><a href="https://github.com/preacherxp/sieve">Day 4: Sieve</a></li>
+          </ul>
+        </noscript>
+      </section>
+    </main>
+
+    <footer>
+      <span>Built one day at a time by <a href="https://github.com/preacherxp">@preacherxp</a>.</span>
+      <a href="https://buymeacoffee.com/michal.hachula"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="145" height="40"></a>
+    </footer>
+  </div>
+
+  <script src="tools.js"></script>
+  <script>
+    const YEAR = 2026, MONTH = 10, DAYS = 30; // November, months are zero based
+    const start = new Date(YEAR, MONTH, 1);
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = Math.round((midnight - start) / 86400000) + 1; // below 1 before the start, above 30 after
+    const shipped = new Map(window.TOOLS.map((t) => [t.day, t]));
+    const pad = (n) => String(n).padStart(2, "0");
+
+    const el = (tag, cls, html) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (html != null) node.innerHTML = html;
+      return node;
+    };
+
+    const grid = document.getElementById("grid");
+    const weekday = start.getDay(); // Sunday first, matching the header row
+    for (let i = 0; i < weekday; i++) grid.append(el("li", "cell blank"));
+
+    for (let d = 1; d <= DAYS; d++) {
+      const tool = shipped.get(d);
+      const date = new Date(YEAR, MONTH, d);
+      const label = date.toLocaleDateString("en", { weekday: "long", month: "long", day: "numeric" });
+      const head = `<div class="cell-head"><span class="date">${d}</span><span class="day">Day ${pad(d)}</span></div>`;
+      const li = el("li");
+      let cell;
+      if (tool) {
+        cell = el("a", "cell shipped", head +
+          `<div class="thumb ${tool.fit}"><img src="${tool.image}" alt="" loading="lazy"></div>` +
+          `<div class="meta"><strong>${tool.name}</strong><span>${tool.stack}</span><p class="blurb">${tool.blurb}</p></div>`);
+        cell.href = `https://github.com/${tool.repo}`;
+        cell.setAttribute("aria-label", `Day ${d}, ${label}: ${tool.name}. ${tool.blurb}`);
+      } else {
+        const hint = d === today ? "Building now" : d < today ? "No tool yet" : "Coming up";
+        cell = el("div", "cell upcoming", head + `<div class="hint">${hint}</div>`);
+        cell.setAttribute("aria-label", `Day ${d}, ${label}: ${hint.toLowerCase()}`);
+      }
+      if (d === today) {
+        cell.classList.add("today");
+        cell.setAttribute("aria-current", "date");
+      }
+      cell.style.animationDelay = `${Math.min(d * 20, 600)}ms`;
+      li.className = "slot";
+      li.append(cell);
+      grid.append(li);
+    }
+
+    const trailing = (7 - ((weekday + DAYS) % 7)) % 7;
+    for (let i = 0; i < trailing; i++) grid.append(el("li", "cell blank"));
+
+    const bar = document.getElementById("bar");
+    for (let d = 1; d <= DAYS; d++) {
+      bar.append(el("i", shipped.has(d) ? "done" : d === today ? "now" : ""));
+    }
+
+    const dayOf = Math.max(0, Math.min(DAYS, today));
+    document.getElementById("n-shipped").textContent = pad(shipped.size);
+    document.getElementById("n-day").textContent = pad(dayOf);
+    document.getElementById("n-left").textContent = pad(DAYS - shipped.size);
+  </script>
+</body>
+</html>
