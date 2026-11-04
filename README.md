@@ -28,6 +28,6 @@ The page is plain HTML with no build step. Open `index.html` in a browser to pre
 
 ## Thumbnails
 
-Every day uses the same 800×600 tile so the calendar reads as one set: a flat `#1F1F1F` ground with a `#313131` dot grid, and a tight crop of the tool's real UI in a window frame 64px from the top and left, running off the right and bottom edges. [`thumbs/template.html`](thumbs/template.html) draws it; [`thumbs/make.sh`](thumbs/make.sh) renders it with headless Chrome (set `CHROME=` to use another binary; needs `jq`).
+Every day uses the same 800×600 tile so the calendar reads as one set: a flat `#2B2B2B` ground with a `#3D3D3D` dot grid, and a tight crop of the tool's real UI in a window frame 64px from the top and left, running off the right and bottom edges. [`thumbs/template.html`](thumbs/template.html) draws it; [`thumbs/make.sh`](thumbs/make.sh) renders it with headless Chrome (set `CHROME=` to use another binary; needs `jq`).
 
-Crop to the one part that says what the tool does, tight enough to read at 130px wide: the panel, the highlighted element, the result. Never a whole window or a logo.
+Use a dark mode capture of the tool when it has one, so every tile reads as one set. Crop to the one part that says what the tool does, tight enough to read at 130px wide: the panel, the highlighted element, the result. Never a whole window or a logo.

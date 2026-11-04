@@ -1,7 +1,7 @@
 [
   {"slug": "opencode-answer", "src": "src/opencode-answer.png", "x": 86, "y": 86, "w": 820, "hero": {"x": 86, "y": 86, "w": 1022}},
   {"slug": "flokque-aloft", "src": "src/flokque-aloft.png", "x": 24, "y": 24, "w": 900, "hero": {"x": 24, "y": 24, "w": 1112}},
-  {"slug": "element-snap", "src": "src/element-snap.png", "x": 930, "y": 455, "w": 860, "hero": {"x": 330, "y": 278, "w": 2200}},
+  {"slug": "element-snap", "src": "src/element-snap.png", "x": 425, "y": 385, "w": 1000, "hero": {"src": "src/element-snap-pricing.png", "x": 330, "y": 278, "w": 2200}},
   {"slug": "sieve", "src": "src/sieve.png", "x": 1512, "y": 152, "w": 908, "hero": {"x": 440, "y": 130, "w": 2000}},
-  {"slug": "archigraph", "src": "src/archigraph.png", "x": 630, "y": 250, "w": 420, "hero": {"x": 80, "y": 0, "w": 1100}}
+  {"slug": "archigraph", "src": "src/archigraph.png", "x": 630, "y": 250, "w": 420, "hero": {"src": "src/archigraph-light.png", "x": 80, "y": 0, "w": 1100}}
 ]
