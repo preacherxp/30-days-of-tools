@@ -1,12 +1,15 @@
 <!doctype html>
-<!-- Calendar thumbnail, 800×600. Rendered by make.sh; the query string says which
-     image to frame and which part of it: ?src=src/x.png&x=80&y=80&w=1032 (source pixels).
-     The crop's top left corner lands on the frame's corner and is scaled so w fills the frame. -->
+<!-- Rendered by make.sh; the query string says which image to frame and which part of it,
+     in source pixels: ?src=src/x.png&x=80&y=80&w=1032.
+     Tile (default, 800×600): the crop's top left corner lands on the frame's corner, w fills
+     the frame, and the frame runs off the right and bottom edges.
+     Hero (&mode=hero&h=…, 800 wide): the whole x, y, w, h crop sits in a frame with an even
+     48px margin on every side, so nothing looks cut off in a README. -->
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    html, body { margin: 0; width: 800px; height: 600px; overflow: hidden; }
+    html, body { margin: 0; width: 800px; height: 100%; overflow: hidden; }
     body {
       position: relative;
       background-color: #2b2b2b;
@@ -21,14 +24,21 @@
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 32px 64px rgba(0, 0, 0, 0.6);
     }
     .frame img { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .hero .frame { left: 48px; top: 48px; width: 704px; }
   </style>
 </head>
 <body>
   <div class="frame"><img id="shot" alt=""></div>
   <script>
-    const VISIBLE = 736; // 800 minus the 64px inset; the frame runs off the right and bottom edges
     const q = new URLSearchParams(location.search);
+    const hero = q.get("mode") === "hero";
+    // Tile: 800 minus the 64px inset, running off the edges. Hero: 800 minus two 48px margins.
+    const VISIBLE = hero ? 704 : 736;
     const img = document.getElementById("shot");
+    if (hero) {
+      document.body.classList.add("hero");
+      document.querySelector(".frame").style.height = `${(VISIBLE * q.get("h")) / q.get("w")}px`;
+    }
     img.onload = () => {
       const s = VISIBLE / Number(q.get("w"));
       img.style.width = `${img.naturalWidth * s}px`;
