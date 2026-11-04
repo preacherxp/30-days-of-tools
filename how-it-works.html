@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How the theme switch works · 30 tools in 30 days</title>
+  <meta name="description" content="The calendar's dark mode and its disco ball transition, explained with the real code slowed down so you can watch it.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("theme")
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch { document.documentElement.dataset.theme = "light"; }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f0; --card: #ffffff; --ink: #111111; --muted: #6b6b6b; --faint: #a3a19b; --line: #e3e1da;
+      --accent: #e8492f; --code: #ecebe6;
+      --hero-from: #000000; --hero-to: #666666;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --mono: "Geist Mono", ui-monospace, monospace;
+      color-scheme: light;
+    }
+    [data-theme="dark"] {
+      --bg: #181818; --card: #1f1f1f; --ink: #f5f4f0; --muted: #9b9b9b; --faint: #6b6b6b; --line: #313131;
+      --code: #272727; --hero-from: #ffffff; --hero-to: #9b9b9b;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/24px "Geist", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .theming *, .theming *::before, .theming *::after { transition: none !important; }
+    .disco { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+    header.top { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; font-size: 14px; line-height: 20px; }
+    .handle { font-family: var(--mono); color: var(--muted); text-decoration: none; }
+    .handle b { color: var(--ink); font-weight: 500; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card);
+      color: inherit; font: inherit; font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; cursor: pointer;
+      transition: transform 300ms var(--ease), border-color 300ms var(--ease);
+    }
+    .btn:hover { border-color: var(--faint); transform: translateY(-1px); }
+    .btn:active { transform: scale(0.98); }
+    .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .theme { position: relative; width: 38px; height: 38px; padding: 8px; }
+    .theme svg { position: absolute; width: 16px; height: 16px; transition: transform 500ms var(--ease), opacity 300ms var(--ease); }
+    .theme .i-sun, [data-theme="dark"] .theme .i-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    [data-theme="dark"] .theme .i-sun { opacity: 1; transform: none; }
+    .actions { display: flex; gap: 8px; }
+
+    .hero { padding: 48px 0 32px; }
+    h1 {
+      margin: 0; max-width: 680px; font-size: 60px; line-height: 1; font-weight: 700; letter-spacing: -0.03em;
+      background: linear-gradient(90deg, var(--hero-from), var(--hero-to)); -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-wrap: balance;
+    }
+    .lede { margin: 24px 0 0; max-width: 680px; font-size: 20px; line-height: 28px; color: var(--muted); text-wrap: pretty; }
+    .lede b { color: var(--ink); font-weight: 600; }
+
+    .toc { display: flex; flex-wrap: wrap; gap: 8px; padding: 24px 0 0; list-style: none; margin: 0; }
+    .toc a { display: inline-block; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; line-height: 20px; text-decoration: none; color: var(--muted); }
+    .toc a:hover { color: var(--ink); border-color: var(--faint); }
+
+    section.part { padding: 64px 0 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+    h2 { margin: 8px 0 16px; font-size: 36px; line-height: 40px; font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+    h3 { margin: 32px 0 8px; font-size: 20px; line-height: 28px; font-weight: 600; }
+    p { margin: 0 0 16px; max-width: 680px; text-wrap: pretty; }
+    p.muted, .muted { color: var(--muted); }
+    code { font-family: var(--mono); font-size: 14px; background: var(--code); padding: 2px 4px; border-radius: 4px; }
+    pre {
+      margin: 0 0 24px; padding: 16px; border-radius: 12px; background: var(--code); overflow-x: auto;
+      font-family: var(--mono); font-size: 14px; line-height: 20px;
+    }
+    pre code { background: none; padding: 0; }
+    .c { color: var(--faint); }
+    .k { color: var(--accent); }
+    ol.steps { margin: 0 0 24px; padding-left: 24px; max-width: 680px; }
+    ol.steps li { margin-bottom: 8px; }
+
+    /* Swatches */
+    .swatches { display: grid; grid-template-columns: auto 1fr 1fr; gap: 1px; margin: 0 0 24px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--line); max-width: 680px; }
+    .swatches > div { background: var(--card); padding: 8px 12px; font-size: 14px; line-height: 20px; display: flex; align-items: center; gap: 8px; }
+    .swatches .h { font-family: var(--mono); font-size: 12px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+    .swatches i { width: 16px; height: 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.35); flex: none; }
+    .swatches code { background: none; padding: 0; }
+
+    /* The miniature calendar used by the demos */
+    .stage { position: relative; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); margin: 24px 0 16px; user-select: none; }
+    .mock {
+      --m-bg: #f5f4f0; --m-card: #ffffff; --m-ink: #111111; --m-muted: #6b6b6b; --m-faint: #a3a19b; --m-line: #e3e1da;
+      position: absolute; inset: 0; padding: 20px 24px; background: var(--m-bg); color: var(--m-ink); overflow: hidden;
+    }
+    .mock[data-theme="dark"] { --m-bg: #181818; --m-card: #1f1f1f; --m-ink: #f5f4f0; --m-muted: #9b9b9b; --m-faint: #6b6b6b; --m-line: #313131; }
+    .m-top { display: flex; justify-content: space-between; align-items: center; }
+    .m-handle { font-family: var(--mono); font-size: 12px; color: var(--m-muted); }
+    .m-handle b { color: var(--m-ink); font-weight: 500; }
+    .m-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--m-line); background: var(--m-card); display: grid; place-items: center; }
+    .m-btn svg { width: 14px; height: 14px; }
+    .m-h1 { margin: 24px 0 16px; font-size: 44px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; }
+    .m-bar { display: grid; grid-template-columns: repeat(30, 1fr); gap: 3px; max-width: 480px; }
+    .m-bar i { height: 14px; border-radius: 3px; background: var(--m-line); }
+    .m-bar i.done { background: var(--m-ink); }
+    .m-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 24px; }
+    .m-cell { border: 1px solid var(--m-line); background: var(--m-card); border-radius: 8px; padding: 8px; min-height: 120px; }
+    .m-cell.next { background: transparent; }
+    .m-date { font-family: var(--mono); font-size: 14px; line-height: 20px; font-weight: 500; }
+    .m-cell.next .m-date { color: var(--m-faint); }
+    .m-cell.now { border-color: #e8492f; }
+    .m-cell.now .m-date { color: #e8492f; }
+    .m-thumb { aspect-ratio: 4 / 3; border-radius: 3px; overflow: hidden; background: #2b2b2b; margin: 8px 0; }
+    .m-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .m-name { font-size: 12px; line-height: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #lab canvas { cursor: crosshair; }
+
+    /* Controls */
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 16px; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .seg button { border: 0; background: var(--card); color: var(--muted); font: inherit; font-size: 14px; line-height: 20px; padding: 8px 12px; cursor: pointer; }
+    .seg button + button { border-left: 1px solid var(--line); }
+    .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+    input[type="range"] { flex: 1; min-width: 200px; accent-color: var(--accent); }
+    label.check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: var(--muted); cursor: pointer; }
+    label.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+    .readout { display: flex; flex-wrap: wrap; gap: 8px 24px; font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--muted); margin-bottom: 24px; }
+    .readout b { color: var(--ink); font-weight: 500; }
+    .readout .phase { color: var(--accent); }
+
+    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .panel { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 16px; }
+    .panel h4 { margin: 0 0 12px; font-size: 14px; line-height: 20px; font-weight: 600; }
+    .panel h4 span { color: var(--muted); font-weight: 400; }
+    dl.vals { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 0; font-size: 14px; line-height: 20px; }
+    dl.vals dt { color: var(--muted); }
+    dl.vals dd { margin: 0; font-family: var(--mono); font-size: 13px; text-align: right; }
+    dl.vals .sep { grid-column: 1 / -1; height: 1px; background: var(--line); margin: 4px 0; }
+    .chart { width: 100%; height: auto; display: block; }
+    .chart text { font-family: var(--mono); font-size: 10px; fill: var(--faint); }
+    .legend { display: flex; gap: 16px; font-size: 12px; line-height: 16px; color: var(--muted); margin-top: 8px; }
+    .legend i { display: inline-block; width: 12px; height: 2px; vertical-align: middle; margin-right: 8px; }
+
+    /* One frame demo */
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0 16px; }
+    .pair figure { margin: 0; }
+    .pair .mock { position: relative; inset: auto; border-radius: 12px; padding: 24px; display: grid; place-items: center; min-height: 168px; border: 1px solid var(--line); }
+    .mini { width: 70%; border: 3px solid var(--m-line); background: var(--m-card); border-radius: 12px; padding: 16px; }
+    .mini b { display: block; font-family: var(--mono); font-size: 24px; line-height: 32px; font-weight: 500; }
+    .mini span { font-size: 12px; line-height: 16px; color: var(--m-muted); }
+    .lag .mini { transition: border-color 1200ms linear; }
+    figcaption { margin-top: 8px; font-size: 14px; line-height: 20px; color: var(--muted); }
+    figcaption b { color: var(--ink); font-weight: 600; }
+
+    /* Circle demo */
+    #circle .mock.new { will-change: clip-path, transform; }
+
+    .callout { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: var(--card); max-width: 680px; margin: 0 0 24px; }
+    .callout b { font-weight: 600; }
+
+    table.map { border-collapse: collapse; width: 100%; max-width: 680px; margin: 0 0 24px; font-size: 14px; line-height: 20px; }
+    table.map td { border-top: 1px solid var(--line); padding: 8px 12px 8px 0; vertical-align: top; }
+    table.map td:first-child { font-family: var(--mono); font-size: 13px; white-space: nowrap; color: var(--muted); }
+
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 96px; padding: 32px 0 48px; border-top: 1px solid var(--line); font-size: 14px; line-height: 20px; color: var(--muted); }
+
+    @media (max-width: 760px) {
+      .wrap { padding: 0 20px; }
+      h1 { font-size: 48px; }
+      h2 { font-size: 30px; line-height: 36px; }
+      .panels, .pair { grid-template-columns: 1fr; }
+      .m-h1 { font-size: 28px; margin: 16px 0 12px; }
+      .m-grid { grid-template-columns: repeat(4, 1fr); }
+      .m-cell:nth-child(n + 5) { display: none; }
+      .mock { padding: 12px 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .theme svg { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="handle" href="./"><b>30 days of tools</b> / how the theme switch works</a>
+      <div class="actions">
+        <button class="btn theme" id="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn" href="./">Back to the calendar</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>How the theme<br>switch works</h1>
+        <p class="lede">The calendar's dark mode is <b>three small ideas</b>: colours as variables, a swap that happens in one frame, and a wall of mirror tiles that hides the swap. Every demo below runs the real code, slowed down so you can watch it. The button in the top right corner runs it at full speed.</p>
+        <ul class="toc">
+          <li><a href="#variables">1. Colours are variables</a></li>
+          <li><a href="#one-frame">2. One frame swap</a></li>
+          <li><a href="#disco">3. The disco ball</a></li>
+          <li><a href="#circle">4. Why the circle broke</a></li>
+          <li><a href="#code">5. Read the code</a></li>
+        </ul>
+      </section>
+
+      <!-- 1 -->
+      <section class="part" id="variables">
+        <div class="kicker">Part 1</div>
+        <h2>The theme is a set of variables</h2>
+        <p>No rule on the page names a colour directly. Every background, border and text colour reads a CSS variable, and the variables have two sets of values. The light set lives on <code>:root</code>; the dark set overrides it whenever <code>&lt;html&gt;</code> has <code>data-theme="dark"</code>.</p>
+<pre><code><span class="k">:root</span> {
+  --bg: #f5f4f0;  --card: #ffffff;  --ink: #111111;  --line: #e3e1da;
+}
+<span class="k">[data-theme="dark"]</span> {
+  --bg: #181818;  --card: #1f1f1f;  --ink: #f5f4f0;  --line: #313131;
+}
+.cell { background: var(--card); border: 1px solid var(--line); }</code></pre>
+        <div class="swatches" role="table" aria-label="Theme variables">
+          <div class="h" role="columnheader">Variable</div><div class="h" role="columnheader">Light</div><div class="h" role="columnheader">Dark</div>
+          <div><code>--bg</code></div><div><i style="background:#f5f4f0"></i><code>#f5f4f0</code></div><div><i style="background:#181818"></i><code>#181818</code></div>
+          <div><code>--card</code></div><div><i style="background:#ffffff"></i><code>#ffffff</code></div><div><i style="background:#1f1f1f"></i><code>#1f1f1f</code></div>
+          <div><code>--ink</code></div><div><i style="background:#111111"></i><code>#111111</code></div><div><i style="background:#f5f4f0"></i><code>#f5f4f0</code></div>
+          <div><code>--line</code></div><div><i style="background:#e3e1da"></i><code>#e3e1da</code></div><div><i style="background:#313131"></i><code>#313131</code></div>
+          <div><code>--accent</code></div><div><i style="background:#e8492f"></i><code>#e8492f</code></div><div><i style="background:#e8492f"></i><code>#e8492f</code> <span class="muted">same in both</span></div>
+        </div>
+        <p>So switching the theme is a single line of JavaScript, and the browser repaints every element with the other values in the next frame:</p>
+<pre><code>document.documentElement.dataset.theme = <span class="k">"dark"</span>;</code></pre>
+        <p>One more piece runs before anything is drawn. A tiny script in <code>&lt;head&gt;</code> sets that attribute from your saved choice, or from your system setting the first time you visit. Without it, a dark mode visitor would see the light page flash on every load.</p>
+      </section>
+
+      <!-- 2 -->
+      <section class="part" id="one-frame">
+        <div class="kicker">Part 2</div>
+        <h2>The swap has to happen in one frame</h2>
+        <p>Some elements animate their own colours: the cards fade their border over 300 milliseconds when you hover them. That's nice on hover and wrong during a theme switch. The background changes at once, the border fades slowly, and for a moment you see a light border on a dark card. Press the button to see both side by side, with the fade slowed to 1.2 seconds.</p>
+        <div class="pair">
+          <figure class="lag">
+            <div class="mock" data-theme="light"><div class="mini"><b>05</b><span>shipped</span></div></div>
+            <figcaption><b>With the card's own fade.</b> The border lags behind the card.</figcaption>
+          </figure>
+          <figure>
+            <div class="mock" data-theme="light"><div class="mini"><b>05</b><span>shipped</span></div></div>
+            <figcaption><b>With <code>.theming</code>.</b> Everything changes in the same frame.</figcaption>
+          </figure>
+        </div>
+        <div class="controls"><button class="btn primary" id="flip" type="button">Flip both themes</button></div>
+        <p>The fix is one rule. While <code>&lt;html&gt;</code> has the class <code>theming</code>, every transition on the page is switched off:</p>
+<pre><code><span class="k">.theming</span> *, <span class="k">.theming</span> *::before, <span class="k">.theming</span> *::after { transition: none !important; }
+
+<span class="k">function</span> swap() {
+  root.classList.add(<span class="k">"theming"</span>);           <span class="c">// fades off</span>
+  root.dataset.theme = next;               <span class="c">// every colour changes</span>
+  <span class="c">// two frames later the new colours are on screen; turn fades back on for hover</span>
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove(<span class="k">"theming"</span>)));
+}</code></pre>
+        <p class="muted">It waits two frames, not one, because the first <code>requestAnimationFrame</code> callback runs before the browser paints. Removing the class there would let the fades start anyway.</p>
+      </section>
+
+      <!-- 3 -->
+      <section class="part" id="disco">
+        <div class="kicker">Part 3</div>
+        <h2>The disco ball hides the swap</h2>
+        <p>The transition never touches the page. A <code>&lt;canvas&gt;</code> is laid over the whole screen, tiles are drawn on it, and the theme flips underneath while the canvas covers everything. It runs in two phases of 560 milliseconds each:</p>
+        <ol class="steps">
+          <li><b>Cover.</b> Tiles in the new theme's background colour spin in, starting at the button and sweeping outward, until they cover the screen.</li>
+          <li><b>Swap.</b> With the screen fully covered, <code>swap()</code> flips the theme. You can't see it happen.</li>
+          <li><b>Reveal.</b> The same tiles spin away in the same order, uncovering the page that is now in the new theme. Then the canvas is removed.</li>
+        </ol>
+        <p>Here's the real tile code on a miniature calendar. Press play, drag the slider to scrub, and turn on X-ray to see the page through the tiles and watch the swap.</p>
+
+        <div class="stage" id="lab"></div>
+        <div class="controls">
+          <button class="btn primary" id="play" type="button">Play</button>
+          <div class="seg" role="group" aria-label="Speed">
+            <button type="button" data-speed="1">1×</button>
+            <button type="button" data-speed="0.25" aria-pressed="true">¼×</button>
+            <button type="button" data-speed="0.05">1/20×</button>
+          </div>
+          <input type="range" id="scrub" min="0" max="2000" value="0" aria-label="Time through the transition">
+        </div>
+        <div class="controls">
+          <label class="check"><input type="checkbox" id="xray"> X-ray: draw the tiles see-through</label>
+          <label class="check"><input type="checkbox" id="order"> Colour tiles by when they start: red first, blue last</label>
+        </div>
+        <div class="readout" aria-live="polite">
+          <span class="phase" id="r-phase">Phase 1 · covering</span>
+          <span>time <b id="r-time">0 ms</b></span>
+          <span>moving <b id="r-moving">0</b></span>
+          <span>settled <b id="r-settled">0</b></span>
+          <span>page under the tiles <b id="r-theme">light</b></span>
+        </div>
+
+        <div class="panels">
+          <div class="panel">
+            <h4>Tile inspector <span>· click any tile</span></h4>
+            <dl class="vals" id="inspect"></dl>
+          </div>
+          <div class="panel">
+            <h4>Over time <span>· both phases</span></h4>
+            <svg class="chart" id="chart" viewBox="0 0 400 180" role="img" aria-label="Chart of the selected tile's size and the share of settled tiles over both phases"></svg>
+            <div class="legend"><span><i style="background:var(--ink)"></i>share of tiles fully covering</span><span><i style="background:var(--accent)"></i>selected tile's size</span></div>
+          </div>
+        </div>
+
+        <h3>What each tile knows</h3>
+        <p>When the transition starts, the screen is cut into a grid of 32 pixel tiles (24 in this miniature) and each tile draws its own random numbers once:</p>
+<pre><code>tiles.push({
+  at:    d * 0.8 + Math.random() * 0.2,   <span class="c">// when it starts: distance from the button, plus noise</span>
+  spin:  ±(0.6 to 1.2) radians,           <span class="c">// how far it is turned while small</span>
+  shade: ±7%,                             <span class="c">// lighter or darker, like a facet catching light</span>
+  tint:  Math.random() &lt; 0.06,            <span class="c">// flashes the red accent</span>
+  glint: Math.random() &lt; 0.05,            <span class="c">// flashes white and draws a sparkle</span>
+});</code></pre>
+        <p><code>d</code> is the tile's distance from the button, divided by the distance to the farthest corner, so it runs from 0 next to the button to 1 in the far corner. The noise is why the wave front is ragged instead of a perfect circle. Turn on <b>Colour tiles by when they start</b> above to see <code>at</code> as a heat map.</p>
+
+        <h3>One clock, a slice for each tile</h3>
+        <p>Each phase has a clock <code>t</code> that runs from 0 to 1 over 560 milliseconds. Every tile moves during its own slice of that clock, 38% of the phase long, starting at a point set by <code>at</code>:</p>
+<pre><code><span class="k">const</span> TILE = 0.38;
+<span class="k">const</span> p = clamp((t - tile.at * (1 - TILE)) / TILE, 0, 1);   <span class="c">// this tile's own 0 → 1</span></code></pre>
+        <p>A tile next to the button has <code>at</code> near 0, so it moves while <code>t</code> goes from 0 to 0.38. A tile in the far corner has <code>at</code> near 1 and moves from 0.62 to 1. The formula makes sure the last tile lands exactly when the phase ends, so the wall is always complete before the swap. The black line in the chart shows that: it reaches 100% right at <code>swap()</code>.</p>
+
+        <h3>Turning a number into a spinning mirror</h3>
+        <p><code>p</code> goes through an ease out curve, fast at first and gentle at the end, to give the size <code>s</code>. While covering, <code>s</code> goes from 0 to 1; while revealing, from 1 to 0. Everything about the tile follows from <code>s</code> and <code>p</code>:</p>
+<pre><code><span class="k">const</span> s     = coming ? easeOut(p) : 1 - easeOut(p);
+<span class="k">const</span> size  = (32 - 2) * s;              <span class="c">// the 2 pixels left over are the grout between mirrors</span>
+<span class="k">const</span> angle = (1 - s) * tile.spin;       <span class="c">// most turned when smallest, square when it lands</span>
+<span class="k">const</span> flash = Math.sin(p * Math.PI);     <span class="c">// 0 → 1 → 0: peaks halfway through the spin</span>
+
+<span class="k">if</span> (s >= 1) ctx.fillRect(x, y, 33, 33);  <span class="c">// a landed tile is 1px bigger than the grid: no gaps left</span></code></pre>
+        <p><code>flash</code> drives every highlight: the red tint, the white glint and the four point sparkle all peak halfway through a tile's spin and fade as it lands. A tile at rest is drawn almost flat (a quarter of its shade), so the finished wall is an even colour. Landed tiles are drawn one pixel larger than their grid square, which closes the grout, so nothing of the old page shows through at the moment of the swap. Turn on X-ray and scrub across the middle of the slider to see the page change colour under a complete wall.</p>
+      </section>
+
+      <!-- 4 -->
+      <section class="part" id="circle">
+        <div class="kicker">Part 4</div>
+        <h2>Why the circle version broke</h2>
+        <p>The first version used the browser's View Transitions API. The browser takes a picture of the page, flips the theme, takes a second picture, and stacks the new picture on the old one. The code then grew a circular hole in the new picture, <code>clip-path: circle()</code>, from the button outward.</p>
+        <p>To make it feel like a sphere, the new picture was also scaled from 106% down to 100% while the circle grew. That's the bug: inside the circle the page was slightly bigger than outside it, so every line of text and every card edge broke where the circle crossed it. Turn the scale on and drag the slider to see it.</p>
+        <div class="stage" id="cstage"></div>
+        <div class="controls">
+          <input type="range" id="cprog" min="0" max="1000" value="420" aria-label="Circle progress">
+          <label class="check"><input type="checkbox" id="cscale" checked> Scale the new picture (the bug)</label>
+        </div>
+        <div class="readout"><span>circle radius <b id="c-r">0 px</b></span><span>scale <b id="c-s">1.000</b></span><span class="phase">mismatch at the edge <b id="c-off">0 px</b></span></div>
+        <div class="callout">A point at distance <code>r</code> from the button moves by <code>r × (scale − 1)</code> when scaled around the button. At the edge of the circle <code>r</code> is the radius, so a 600 pixel circle at 103% puts the inside 18 pixels out of line with the outside. The disco ball avoids the whole problem: there is only ever one real page, plus a cover that is either opaque or gone.</div>
+      </section>
+
+      <!-- 5 -->
+      <section class="part" id="code">
+        <div class="kicker">Part 5</div>
+        <h2>Read the code</h2>
+        <p>Everything lives in <a href="https://github.com/preacherxp/30-days-of-tools/blob/main/index.html"><code>index.html</code></a>, in this order:</p>
+        <table class="map">
+          <tr><td>&lt;head&gt; script</td><td>Picks the theme before the first paint: your saved choice, or your system setting.</td></tr>
+          <tr><td>[data-theme="dark"]</td><td>The dark values of every colour variable.</td></tr>
+          <tr><td>.theming</td><td>Switches all transitions off while the colours swap.</td></tr>
+          <tr><td>function disco()</td><td>Builds the canvas and the tiles, runs both phases, calls <code>swap()</code> in the middle and removes the canvas at the end.</td></tr>
+          <tr><td>const PHASE, TILE</td><td>560 ms per phase; each tile moves for 38% of it.</td></tr>
+          <tr><td>toggle click handler</td><td>Saves your choice, skips the animation if you prefer reduced motion, and ignores clicks while one is running.</td></tr>
+        </table>
+        <p>To watch the real one slowly, change <code>PHASE = 560</code> to <code>5600</code>, open <code>index.html</code> in a browser and click the toggle.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span>Part of <a href="./">30 tools in 30 days</a> by <a href="https://github.com/preacherxp">@preacherxp</a>.</span>
+      <a href="https://buymeacoffee.com/michal.hachula"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="145" height="40" style="display:block"></a>
+    </footer>
+  </div>
+
+  <script>
+    // ---- Shared tile maths: the same numbers as index.html ----
+    const PHASE = 560, TILE = 0.38;
+    const BG = { light: [245, 244, 240], dark: [24, 24, 24] };
+    const ACCENT = [232, 73, 47];
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+    const rgb = (c, a = 1) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+    const easeOut = (t) => 1 - (1 - t) ** 3;
+    const other = (theme) => (theme === "dark" ? "light" : "dark");
+
+    // Seeded random numbers, so scrubbing back and forth shows the same tiles.
+    function seeded(seed) {
+      return () => {
+        seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function makeTiles(W, H, S, ox, oy, rand = Math.random) {
+      const far = Math.hypot(Math.max(ox, W - ox), Math.max(oy, H - oy));
+      const tiles = [];
+      const cols = Math.ceil(W / S);
+      for (let y = 0; y < H; y += S) {
+        for (let x = 0; x < W; x += S) {
+          const d = Math.hypot(x + S / 2 - ox, y + S / 2 - oy) / far;
+          tiles.push({
+            x, y, d, col: x / S, row: y / S,
+            at: d * 0.8 + rand() * 0.2,
+            spin: (rand() < 0.5 ? -1 : 1) * (0.6 + rand() * 0.6),
+            shade: (rand() - 0.5) * 0.14,
+            tint: rand() < 0.06,
+            glint: rand() < 0.05,
+          });
+        }
+      }
+      tiles.cols = cols;
+      return tiles;
+    }
+
+    // T runs 0 → 2 across both phases: below 1 is the cover, from 1 the reveal.
+    function tileState(tile, T) {
+      const coming = T < 1;
+      const t = coming ? T : T - 1;
+      const p = clamp((t - tile.at * (1 - TILE)) / TILE, 0, 1);
+      const s = coming ? easeOut(p) : 1 - easeOut(p);
+      return { coming, p, s, flash: Math.sin(p * Math.PI), moving: p > 0 && p < 1 };
+    }
+
+    function drawTiles(ctx, tiles, T, S, base, opts = {}) {
+      for (const tile of tiles) {
+        const { coming, p, s, flash, moving } = tileState(tile, T);
+        if (s <= 0) continue;
+        let c = mix(base, tile.shade > 0 ? [255, 255, 255] : [0, 0, 0], Math.abs(tile.shade) * (moving ? 1 : 0.25));
+        if (tile.tint) c = mix(c, ACCENT, 0.45 * flash);
+        if (tile.glint) c = mix(c, [255, 255, 255], 0.55 * flash);
+        if (opts.order) c = mix([232, 73, 47], [44, 108, 176], tile.at); // red starts first, blue last
+        ctx.fillStyle = rgb(c, opts.xray ? 0.45 : 1);
+        if (s >= 1) { ctx.fillRect(tile.x, tile.y, S + (opts.xray ? 0 : 1), S + (opts.xray ? 0 : 1)); continue; }
+        const size = (S - 2) * s;
+        ctx.save();
+        ctx.translate(tile.x + S / 2, tile.y + S / 2);
+        ctx.rotate((1 - s) * tile.spin);
+        ctx.fillRect(-size / 2, -size / 2, size, size);
+        if (tile.glint && flash > 0.3 && !opts.order) {
+          const r = S * 0.5 * flash;
+          ctx.fillStyle = `rgba(255, 255, 255, ${(coming ? 0.9 : 0.6) * flash})`;
+          ctx.beginPath();
+          ctx.moveTo(0, -r); ctx.lineTo(r * 0.14, -r * 0.14); ctx.lineTo(r, 0); ctx.lineTo(r * 0.14, r * 0.14);
+          ctx.lineTo(0, r); ctx.lineTo(-r * 0.14, r * 0.14); ctx.lineTo(-r, 0); ctx.lineTo(-r * 0.14, -r * 0.14);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    // ---- The miniature calendar ----
+    const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+    const TOOLS = [["opencode-answer", "OpenCode Answer"], ["flokque-aloft", "Flokque Aloft"], ["element-snap", "Element Snap"], ["sieve", "Sieve"], ["archigraph", "Archigraph"]];
+    function mockHTML(theme, cls = "") {
+      const cells = [1, 2, 3, 4, 5, 6, 7].map((d) => {
+        const tool = TOOLS[d - 1];
+        if (!tool) return `<div class="m-cell next"><div class="m-date">${d}</div></div>`;
+        return `<div class="m-cell${d === 4 ? " now" : ""}"><div class="m-date">${d}</div><div class="m-thumb"><img src="assets/thumbs/${tool[0]}.png" alt=""></div><div class="m-name">${tool[1]}</div></div>`;
+      }).join("");
+      const bar = Array.from({ length: 30 }, (_, i) => `<i${i < 5 ? ' class="done"' : ""}></i>`).join("");
+      return `<div class="mock ${cls}" data-theme="${theme}" aria-hidden="true">
+        <div class="m-top"><span class="m-handle"><b>preacherxp</b> / 30 days of tools</span><span class="m-btn">${SUN}</span></div>
+        <div class="m-h1">30 tools<br>in 30 days</div>
+        <div class="m-bar">${bar}</div>
+        <div class="m-grid">${cells}</div>
+      </div>`;
+    }
+    const originIn = (stage) => {
+      const s = stage.getBoundingClientRect(), b = stage.querySelector(".m-btn").getBoundingClientRect();
+      return [b.left - s.left + b.width / 2, b.top - s.top + b.height / 2];
+    };
+
+    // ---- Part 3: the lab ----
+    (() => {
+      const stage = document.getElementById("lab");
+      const S = 24;
+      let from = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+      stage.innerHTML = mockHTML(from) + "<canvas></canvas>";
+      const mock = stage.querySelector(".mock");
+      const canvas = stage.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+      const scrub = document.getElementById("scrub");
+      const xray = document.getElementById("xray");
+      const order = document.getElementById("order");
+      const playBtn = document.getElementById("play");
+      const out = (id) => document.getElementById(id);
+      let W = 0, H = 0, tiles = [], selected = 0, T = 0, speed = 0.25, playing = false, last = 0;
+
+      function build() {
+        const r = stage.getBoundingClientRect();
+        W = r.width; H = r.height;
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const [ox, oy] = originIn(stage);
+        tiles = makeTiles(W, H, S, ox, oy, seeded(7));
+        selected = tiles.findIndex((t) => t.col === Math.floor(tiles.cols / 2) && t.row === Math.floor(H / S / 2));
+        if (selected < 0) selected = 0;
+        chartStatic();
+        render();
+      }
+
+      function render() {
+        const to = other(from);
+        mock.dataset.theme = T >= 1 ? to : from;
+        ctx.clearRect(0, 0, W, H);
+        drawTiles(ctx, tiles, T, S, BG[to], { xray: xray.checked, order: order.checked });
+        const sel = tiles[selected];
+        if (sel) { ctx.strokeStyle = "#e8492f"; ctx.lineWidth = 2; ctx.strokeRect(sel.x + 1, sel.y + 1, S - 2, S - 2); }
+
+        let moving = 0, settled = 0;
+        for (const tile of tiles) { const st = tileState(tile, T); if (st.moving) moving++; else if (st.s >= 1) settled++; }
+        out("r-phase").textContent = T >= 2 ? "Done · canvas removed" : T >= 1 ? "Phase 2 · revealing" : "Phase 1 · covering";
+        out("r-time").textContent = `${Math.round(T * PHASE)} ms`;
+        out("r-moving").textContent = moving;
+        out("r-settled").textContent = settled;
+        out("r-theme").textContent = T >= 1 ? `${to} (swapped)` : from;
+        scrub.value = Math.round(T * 1000);
+        inspect();
+        chartMarker();
+      }
+
+      function inspect() {
+        const tile = tiles[selected];
+        if (!tile) return;
+        const st = tileState(tile, T);
+        const startMs = Math.round(tile.at * (1 - TILE) * PHASE);
+        const rows = [
+          ["position", `column ${tile.col}, row ${tile.row}`],
+          ["distance d", tile.d.toFixed(2)],
+          ["at", tile.at.toFixed(2)],
+          ["moves", `${startMs} to ${startMs + Math.round(TILE * PHASE)} ms`],
+          ["spin", `${Math.round(tile.spin * 57.3)}°`],
+          ["shade", `${tile.shade > 0 ? "+" : ""}${Math.round(tile.shade * 100)}%`],
+          ["tint, glint", `${tile.tint ? "red" : "no"}, ${tile.glint ? "sparkle" : "no"}`],
+          null,
+          ["p", st.p.toFixed(2)],
+          ["s (size)", `${st.s.toFixed(2)} → ${Math.round((S - 2) * st.s)} px`],
+          ["angle", `${Math.round((1 - st.s) * tile.spin * 57.3)}°`],
+          ["flash", st.flash.toFixed(2)],
+        ];
+        out("inspect").innerHTML = rows.map((r) => r ? `<dt>${r[0]}</dt><dd>${r[1]}</dd>` : '<div class="sep"></div>').join("");
+      }
+
+      // Chart: x is T from 0 to 2, y is 0 to 1.
+      const chart = document.getElementById("chart");
+      const X = (T) => 24 + T * 184, Y = (v) => 150 - v * 130;
+      function chartStatic() {
+        const pts = (f) => Array.from({ length: 201 }, (_, i) => `${X(i / 100).toFixed(1)},${Y(f(i / 100)).toFixed(1)}`).join(" ");
+        const cover = pts((T) => tiles.filter((t) => tileState(t, T).s >= 1).length / tiles.length);
+        const mine = pts((T) => tileState(tiles[selected], T).s);
+        chart.innerHTML = `
+          <line x1="${X(0)}" y1="${Y(0)}" x2="${X(2)}" y2="${Y(0)}" stroke="var(--line)"/>
+          <line x1="${X(0)}" y1="${Y(1)}" x2="${X(2)}" y2="${Y(1)}" stroke="var(--line)" stroke-dasharray="2 3"/>
+          <line x1="${X(1)}" y1="${Y(0) + 6}" x2="${X(1)}" y2="${Y(1) - 6}" stroke="var(--faint)" stroke-dasharray="3 3"/>
+          <text x="${X(1)}" y="12" text-anchor="middle">swap()</text>
+          <text x="${X(0.5)}" y="172" text-anchor="middle">phase 1 · cover</text>
+          <text x="${X(1.5)}" y="172" text-anchor="middle">phase 2 · reveal</text>
+          <text x="${X(0) - 6}" y="${Y(1) + 3}" text-anchor="end">1</text>
+          <text x="${X(0) - 6}" y="${Y(0) + 3}" text-anchor="end">0</text>
+          <polyline points="${cover}" fill="none" stroke="var(--ink)" stroke-width="2"/>
+          <polyline points="${mine}" fill="none" stroke="#e8492f" stroke-width="2"/>
+          <line id="marker" x1="0" y1="${Y(0) + 6}" x2="0" y2="${Y(1) - 6}" stroke="#e8492f" stroke-width="1"/>`;
+      }
+      function chartMarker() {
+        const m = chart.querySelector("#marker");
+        if (m) { m.setAttribute("x1", X(T)); m.setAttribute("x2", X(T)); }
+      }
+
+      function tick(now) {
+        if (!playing) return;
+        const dt = last ? now - last : 0;
+        last = now;
+        T = Math.min(2, T + (dt / PHASE) * speed);
+        render();
+        if (T >= 2) { playing = false; playBtn.textContent = "Play again"; return; }
+        requestAnimationFrame(tick);
+      }
+      playBtn.addEventListener("click", () => {
+        if (playing) { playing = false; playBtn.textContent = "Play"; return; }
+        if (T >= 2) { from = other(from); T = 0; } // next run goes the other way
+        playing = true; last = 0; playBtn.textContent = "Pause";
+        requestAnimationFrame(tick);
+      });
+      scrub.addEventListener("input", () => { playing = false; playBtn.textContent = "Play"; T = scrub.value / 1000; render(); });
+      xray.addEventListener("change", render);
+      order.addEventListener("change", render);
+      document.querySelectorAll("[data-speed]").forEach((b) => b.addEventListener("click", () => {
+        speed = Number(b.dataset.speed);
+        document.querySelectorAll("[data-speed]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+      }));
+      canvas.addEventListener("click", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const col = Math.floor((e.clientX - r.left) / S), row = Math.floor((e.clientY - r.top) / S);
+        const i = row * tiles.cols + col;
+        if (tiles[i]) { selected = i; chartStatic(); render(); }
+      });
+      new ResizeObserver(build).observe(stage);
+      document.fonts?.ready.then(build);
+    })();
+
+    // ---- Part 2: one frame ----
+    document.getElementById("flip").addEventListener("click", () => {
+      document.querySelectorAll(".pair .mock").forEach((m) => { m.dataset.theme = other(m.dataset.theme); });
+    });
+
+    // ---- Part 4: the circle bug ----
+    (() => {
+      const stage = document.getElementById("cstage");
+      stage.innerHTML = mockHTML("light", "old") + mockHTML("dark", "new");
+      const layer = stage.querySelector(".new");
+      const prog = document.getElementById("cprog");
+      const scale = document.getElementById("cscale");
+      const out = (id) => document.getElementById(id);
+      function render() {
+        const r = stage.getBoundingClientRect();
+        const [ox, oy] = originIn(stage);
+        const far = Math.hypot(Math.max(ox, r.width - ox), Math.max(oy, r.height - oy));
+        const k = prog.value / 1000;
+        const radius = far * k;
+        const sc = scale.checked ? 1.06 - 0.06 * easeOut(k) : 1;
+        // The clip is set in the layer's own coordinates, then the whole layer is scaled around the button.
+        layer.style.clipPath = `circle(${radius / sc}px at ${ox}px ${oy}px)`;
+        layer.style.transformOrigin = `${ox}px ${oy}px`;
+        layer.style.transform = `scale(${sc})`;
+        out("c-r").textContent = `${Math.round(radius)} px`;
+        out("c-s").textContent = sc.toFixed(3);
+        out("c-off").textContent = `${(radius * (sc - 1)).toFixed(1)} px`;
+      }
+      prog.addEventListener("input", render);
+      scale.addEventListener("change", render);
+      new ResizeObserver(render).observe(stage);
+    })();
+
+    // ---- The real switch for this page, same as index.html ----
+    (() => {
+      const root = document.documentElement;
+      const toggle = document.getElementById("theme");
+      const still = matchMedia("(prefers-reduced-motion: reduce)");
+      const label = () => {
+        const dark = root.dataset.theme === "dark";
+        toggle.setAttribute("aria-pressed", String(dark));
+        toggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+      };
+      label();
+
+      function disco(next, ox, oy, swap, done) {
+        const W = innerWidth, H = innerHeight, S = 32;
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const canvas = document.createElement("canvas");
+        canvas.className = "disco";
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        document.body.append(canvas);
+        const ctx = canvas.getContext("2d");
+        ctx.scale(dpr, dpr);
+        const tiles = makeTiles(W, H, S, ox, oy);
+        let start, swapped = false;
+        const frame = (now) => {
+          start ??= now;
+          const T = (now - start) / PHASE;
+          ctx.clearRect(0, 0, W, H);
+          if (T >= 1 && !swapped) { swapped = true; swap(); }
+          if (T >= 2) { canvas.remove(); return done(); }
+          drawTiles(ctx, tiles, T, S, BG[next]);
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+
+      let busy = false;
+      toggle.addEventListener("click", () => {
+        if (busy) return;
+        const next = other(root.dataset.theme);
+        const swap = () => {
+          root.classList.add("theming");
+          root.dataset.theme = next;
+          label();
+          requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("theming")));
+        };
+        try { localStorage.setItem("theme", next); } catch {}
+        if (still.matches) return swap();
+        busy = true;
+        const box = toggle.getBoundingClientRect();
+        disco(next, box.left + box.width / 2, box.top + box.height / 2, swap, () => { busy = false; });
+      });
+    })();
+  </script>
+</body>
+</html>
