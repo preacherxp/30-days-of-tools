@@ -1,5 +1,6 @@
 // One entry per shipped day. Add the next tool here and push; the calendar fills itself in.
 // fit: "contain" for screenshots on a white backdrop, "cover" for full bleed images.
+// position: optional object-position for cover images, centred by default.
 window.TOOLS = [
   {
     day: 1,
@@ -27,6 +28,7 @@ window.TOOLS = [
     stack: "JavaScript · Chrome",
     image: "assets/element-snap.png",
     fit: "cover",
+    position: "left center",
   },
   {
     day: 4,
@@ -36,5 +38,14 @@ window.TOOLS = [
     stack: "Rust · Maven, Gradle",
     image: "assets/sieve.svg",
     fit: "contain",
+  },
+  {
+    day: 5,
+    name: "Archigraph",
+    repo: "preacherxp/archigraph",
+    blurb: "An architecture diagram editor that ships as one HTML file: draw, comment, send it, merge the copies.",
+    stack: "TypeScript · browser",
+    image: "assets/archigraph.png",
+    fit: "cover",
   },
 ];

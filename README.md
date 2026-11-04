@@ -14,6 +14,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 2 | [Flokque Aloft](https://github.com/preacherxp/flokque-aloft) | Keeps your computer working with the lid closed |
 | 3 | [Element Snap](https://github.com/preacherxp/element-snap) | A Chrome extension that saves any element on a web page as a pixel-exact image |
 | 4 | [Sieve](https://github.com/preacherxp/sieve) | Runs only the JVM tests a change can affect |
+| 5 | [Archigraph](https://github.com/preacherxp/archigraph) | An architecture diagram editor that ships as one self-contained HTML file |
 
 ## Adding a day
 

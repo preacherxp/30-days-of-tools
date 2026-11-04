@@ -163,7 +163,7 @@
     .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 500ms var(--ease); }
     .thumb.contain img { object-fit: contain; }
     .thumb.cover { background: #0d1117; }
-    .thumb.cover img { object-fit: cover; object-position: 0 50%; }
+    .thumb.cover img { object-fit: cover; }
     .meta { padding: 12px; }
     .meta strong { display: block; font-size: 14px; line-height: 20px; font-weight: 600; }
     .meta span { display: block; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -274,6 +274,7 @@
             <li><a href="https://github.com/preacherxp/flokque-aloft">Day 2: Flokque Aloft</a></li>
             <li><a href="https://github.com/preacherxp/element-snap">Day 3: Element Snap</a></li>
             <li><a href="https://github.com/preacherxp/sieve">Day 4: Sieve</a></li>
+            <li><a href="https://github.com/preacherxp/archigraph">Day 5: Archigraph</a></li>
           </ul>
         </noscript>
       </section>
@@ -315,7 +316,7 @@
       let cell;
       if (tool) {
         cell = el("a", "cell shipped", head +
-          `<div class="thumb ${tool.fit}"><img src="${tool.image}" alt="" loading="lazy"></div>` +
+          `<div class="thumb ${tool.fit}"><img src="${tool.image}" alt="" loading="lazy"${tool.position ? ` style="object-position: ${tool.position}"` : ""}></div>` +
           `<div class="meta"><strong>${tool.name}</strong><span>${tool.stack}</span><p class="blurb">${tool.blurb}</p></div>`);
         cell.href = `https://github.com/${tool.repo}`;
         cell.setAttribute("aria-label", `Day ${d}, ${label}: ${tool.name}. ${tool.blurb}`);
