@@ -18,8 +18,16 @@ A tool building challenge: one new open source tool every day of November 2026, 
 
 ## Adding a day
 
-1. Add an entry to [`tools.js`](tools.js) and drop its image in `assets/`
-2. Add a row to the table above
-3. Push to `main`; GitHub Pages redeploys the site
+1. Put a full resolution screenshot of the tool in `thumbs/src/<slug>.png`
+2. Add `{ "slug", "src", "x", "y", "w" }` to [`thumbs/thumbs.json`](thumbs/thumbs.json): the crop's top left corner and width in source pixels
+3. Run `thumbs/make.sh <slug>` and check `assets/thumbs/<slug>.png`
+4. Add an entry to [`tools.js`](tools.js) and a row to the table above
+5. Push to `main`; GitHub Pages redeploys the site
 
 The page is plain HTML with no build step. Open `index.html` in a browser to preview it.
+
+## Thumbnails
+
+Every day uses the same 800×600 tile so the calendar reads as one set: a flat `#1F1F1F` ground with a `#313131` dot grid, and a tight crop of the tool's real UI in a window frame 64px from the top and left, running off the right and bottom edges. [`thumbs/template.html`](thumbs/template.html) draws it; [`thumbs/make.sh`](thumbs/make.sh) renders it with headless Chrome (set `CHROME=` to use another binary; needs `jq`).
+
+Crop to the one part that says what the tool does, tight enough to read at 130px wide: the panel, the highlighted element, the result. Never a whole window or a logo.

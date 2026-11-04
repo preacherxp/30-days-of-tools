@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- Calendar thumbnail, 800×600. Rendered by make.sh; the query string says which
+     image to frame and which part of it: ?src=src/x.png&x=80&y=80&w=1032 (source pixels).
+     The crop's top left corner lands on the frame's corner and is scaled so w fills the frame. -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body { margin: 0; width: 800px; height: 600px; overflow: hidden; }
+    body {
+      position: relative;
+      background-color: #1f1f1f;
+      background-image: radial-gradient(#313131 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      background-position: 12px 12px;
+    }
+    .frame {
+      position: absolute; left: 64px; top: 64px; width: 800px; height: 600px;
+      border-radius: 16px; overflow: hidden;
+      background: #000000;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 32px 64px rgba(0, 0, 0, 0.55);
+    }
+    .frame img { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  </style>
+</head>
+<body>
+  <div class="frame"><img id="shot" alt=""></div>
+  <script>
+    const VISIBLE = 736; // 800 minus the 64px inset; the frame runs off the right and bottom edges
+    const q = new URLSearchParams(location.search);
+    const img = document.getElementById("shot");
+    img.onload = () => {
+      const s = VISIBLE / Number(q.get("w"));
+      img.style.width = `${img.naturalWidth * s}px`;
+      img.style.transform = `translate(${-q.get("x") * s}px, ${-q.get("y") * s}px)`;
+    };
+    img.src = q.get("src");
+  </script>
+</body>
+</html>

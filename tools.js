@@ -1,6 +1,5 @@
 // One entry per shipped day. Add the next tool here and push; the calendar fills itself in.
-// fit: "contain" for screenshots on a white backdrop, "cover" for full bleed images.
-// position: optional object-position for cover images, centred by default.
+// image: a 4:3 thumbnail made by thumbs/make.sh from an entry in thumbs/thumbs.json.
 window.TOOLS = [
   {
     day: 1,
@@ -8,8 +7,7 @@ window.TOOLS = [
     repo: "preacherxp/opencode-answer",
     blurb: "A macOS menu bar app for answering OpenCode's questions without switching to the terminal.",
     stack: "Swift · macOS",
-    image: "assets/opencode-answer.png",
-    fit: "contain",
+    image: "assets/thumbs/opencode-answer.png",
   },
   {
     day: 2,
@@ -17,8 +15,7 @@ window.TOOLS = [
     repo: "preacherxp/flokque-aloft",
     blurb: "Keeps your computer working with the lid closed, so agents and builds carry on in your bag.",
     stack: "Rust · macOS, Linux, Windows",
-    image: "assets/flokque-aloft.png",
-    fit: "contain",
+    image: "assets/thumbs/flokque-aloft.png",
   },
   {
     day: 3,
@@ -26,9 +23,7 @@ window.TOOLS = [
     repo: "preacherxp/element-snap",
     blurb: "A Chrome extension that saves any element on a web page as a pixel exact image.",
     stack: "JavaScript · Chrome",
-    image: "assets/element-snap.png",
-    fit: "cover",
-    position: "left center",
+    image: "assets/thumbs/element-snap.png",
   },
   {
     day: 4,
@@ -36,8 +31,7 @@ window.TOOLS = [
     repo: "preacherxp/sieve",
     blurb: "Runs only the JVM tests a change can affect. When unsure, it runs them all.",
     stack: "Rust · Maven, Gradle",
-    image: "assets/sieve.svg",
-    fit: "contain",
+    image: "assets/thumbs/sieve.png",
   },
   {
     day: 5,
@@ -45,7 +39,6 @@ window.TOOLS = [
     repo: "preacherxp/archigraph",
     blurb: "An architecture diagram editor that ships as one HTML file: draw, comment, send it, merge the copies.",
     stack: "TypeScript · browser",
-    image: "assets/archigraph.png",
-    fit: "cover",
+    image: "assets/thumbs/archigraph.png",
   },
 ];

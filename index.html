@@ -12,6 +12,12 @@
   <meta property="og:image" content="https://preacherxp.github.io/30-days-of-tools/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("theme")
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch { document.documentElement.dataset.theme = "light"; }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,8 +30,24 @@
       --faint: #a3a19b;
       --line: #e3e1da;
       --accent: #e8492f;
+      --hero-from: #000000;
+      --hero-to: #666666;
+      --lift: rgba(17, 17, 17, 0.25);
+      color-scheme: light;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
       --mono: "Geist Mono", ui-monospace, monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #181818;
+      --card: #1f1f1f;
+      --ink: #f5f4f0;
+      --muted: #9b9b9b;
+      --faint: #6b6b6b;
+      --line: #313131;
+      --hero-from: #ffffff;
+      --hero-to: #9b9b9b;
+      --lift: rgba(0, 0, 0, 0.6);
+      color-scheme: dark;
     }
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
@@ -65,12 +87,26 @@
     .gh:hover { border-color: var(--faint); transform: translateY(-1px); }
     .gh:active { transform: scale(0.98); }
     .gh svg { width: 16px; height: 16px; }
+    .actions { display: flex; gap: 8px; }
+    button.gh { font: inherit; font-weight: 600; color: inherit; cursor: pointer; }
+    .theme { position: relative; width: 38px; justify-content: center; padding: 8px; }
+    .theme svg { position: absolute; transition: transform 500ms var(--ease), opacity 300ms var(--ease); }
+    .theme .i-sun, [data-theme="dark"] .theme .i-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    [data-theme="dark"] .theme .i-sun { opacity: 1; transform: none; }
+
+    /* Theme switch: the new theme grows out of the button as a sphere while the old page sinks back. */
+    ::view-transition-old(root), ::view-transition-new(root) {
+      animation: none; mix-blend-mode: normal;
+      transform-origin: var(--vx, 50%) var(--vy, 50%);
+    }
+    ::view-transition-old(root) { z-index: 1; }
+    ::view-transition-new(root) { z-index: 2; }
 
     .hero { padding: 64px 0 48px; }
     .hero h1 {
       margin: 0; max-width: 680px;
       font-size: 72px; line-height: 1; font-weight: 700; letter-spacing: -0.03em;
-      background: linear-gradient(90deg, #000000, #666666);
+      background: linear-gradient(90deg, var(--hero-from), var(--hero-to));
       -webkit-background-clip: text; background-clip: text; color: transparent;
       text-wrap: balance;
     }
@@ -141,7 +177,6 @@
     .date { font-size: 24px; line-height: 32px; font-weight: 500; letter-spacing: -0.02em; }
     .day { font-size: 12px; line-height: 16px; color: var(--faint); }
 
-    .shipped { min-height: 232px; }
     .upcoming { background: transparent; }
     .upcoming .date { color: var(--faint); }
     .upcoming .day { color: var(--line); }
@@ -159,11 +194,9 @@
       border-radius: 50%; background: var(--accent); vertical-align: 1px;
     }
 
-    .thumb { position: relative; flex: 1; min-height: 112px; margin: 0 12px; border-radius: 4px; overflow: hidden; background: #ffffff; }
-    .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 500ms var(--ease); }
-    .thumb.contain img { object-fit: contain; }
-    .thumb.cover { background: #0d1117; }
-    .thumb.cover img { object-fit: cover; }
+    .thumb { position: relative; flex: none; aspect-ratio: 4 / 3; margin: 0 12px; border-radius: 4px; overflow: hidden; background: #1f1f1f; }
+    .thumb::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); pointer-events: none; }
+    .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 500ms var(--ease); }
     .meta { padding: 12px; }
     .meta strong { display: block; font-size: 14px; line-height: 20px; font-weight: 600; }
     .meta span { display: block; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -171,13 +204,13 @@
     .blurb {
       position: absolute; inset: auto 0 0 0; margin: 0;
       padding: 16px 12px 12px;
-      background: var(--ink); color: #ffffff;
+      background: var(--ink); color: var(--bg);
       font-size: 14px; line-height: 20px; text-wrap: pretty;
       transform: translateY(100%);
       transition: transform 500ms var(--ease);
     }
     .blurb::after { content: " ↗"; color: var(--accent); }
-    .shipped:hover, .shipped:focus-visible { border-color: var(--faint); box-shadow: 0 16px 32px -16px rgba(17, 17, 17, 0.25); }
+    .shipped:hover, .shipped:focus-visible { border-color: var(--faint); box-shadow: 0 16px 32px -16px var(--lift); }
     .shipped:hover .blurb, .shipped:focus-visible .blurb { transform: none; }
     .shipped:hover .thumb img { transform: scale(1.04); }
     .shipped:active { transform: scale(0.98); }
@@ -195,7 +228,6 @@
       .wrap { padding: 0 24px; }
       .hero h1 { font-size: 60px; }
       .stats { grid-template-columns: 1fr; }
-      .shipped { min-height: 200px; }
       .meta span { display: none; }
     }
     @media (max-width: 720px) {
@@ -215,7 +247,7 @@
       .upcoming .hint { margin: 0; padding: 8px 12px; }
       .shipped { display: grid; grid-template-columns: 112px 1fr; grid-template-rows: auto 1fr; }
       .shipped .cell-head { grid-column: 1 / -1; }
-      .shipped .thumb { margin: 0 0 12px 12px; min-height: 84px; }
+      .shipped .thumb { margin: 0 0 12px 12px; align-self: start; }
       .shipped .meta { padding: 0 12px 12px; }
       .meta span { display: block; white-space: normal; }
       .blurb { position: static; transform: none; background: none; color: var(--muted); padding: 4px 0 0; }
@@ -234,10 +266,13 @@
   <div class="wrap">
     <header class="top">
       <a class="handle" href="https://github.com/preacherxp"><b>preacherxp</b> / 30 days of tools</a>
+      <div class="actions">
+      <button class="gh theme" id="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false"><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
       <a class="gh" href="https://github.com/preacherxp/30-days-of-tools">
         <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.31 75.68A59.78 59.78 0 0 0 202.93 28a8 8 0 0 0-6.93-4a59.75 59.75 0 0 0-48 24h-24a59.75 59.75 0 0 0-48-24a8 8 0 0 0-6.93 4a59.78 59.78 0 0 0-5.38 47.68A58.14 58.14 0 0 0 56 104v8a56.06 56.06 0 0 0 48.44 55.47A39.8 39.8 0 0 0 96 192v8H72a24 24 0 0 1-24-24a40 40 0 0 0-40-40a8 8 0 0 0 0 16a24 24 0 0 1 24 24a40 40 0 0 0 40 40h24v16a8 8 0 0 0 16 0v-40a24 24 0 0 1 48 0v40a8 8 0 0 0 16 0v-40a39.8 39.8 0 0 0-8.44-24.53A56.06 56.06 0 0 0 216 112v-8a58.14 58.14 0 0 0-7.69-28.32ZM200 112a40 40 0 0 1-40 40h-48a40 40 0 0 1-40-40v-8a41.74 41.74 0 0 1 6.9-22.48a8 8 0 0 0 1.1-7.69a43.81 43.81 0 0 1 .79-33.58a43.88 43.88 0 0 1 32.32 20.06a8 8 0 0 0 6.71 3.69h32.35a8 8 0 0 0 6.74-3.69a43.87 43.87 0 0 1 32.32-20.06a43.81 43.81 0 0 1 .77 33.58a8.09 8.09 0 0 0 1 7.65a41.72 41.72 0 0 1 7 22.52Z"/></svg>
         Source
       </a>
+      </div>
     </header>
 
     <main>
@@ -316,7 +351,7 @@
       let cell;
       if (tool) {
         cell = el("a", "cell shipped", head +
-          `<div class="thumb ${tool.fit}"><img src="${tool.image}" alt="" loading="lazy"${tool.position ? ` style="object-position: ${tool.position}"` : ""}></div>` +
+          `<div class="thumb"><img src="${tool.image}" alt="" loading="lazy"></div>` +
           `<div class="meta"><strong>${tool.name}</strong><span>${tool.stack}</span><p class="blurb">${tool.blurb}</p></div>`);
         cell.href = `https://github.com/${tool.repo}`;
         cell.setAttribute("aria-label", `Day ${d}, ${label}: ${tool.name}. ${tool.blurb}`);
@@ -347,6 +382,41 @@
     document.getElementById("n-shipped").textContent = pad(shipped.size);
     document.getElementById("n-day").textContent = pad(dayOf);
     document.getElementById("n-left").textContent = pad(DAYS - shipped.size);
+
+    const root = document.documentElement;
+    const toggle = document.getElementById("theme");
+    const still = matchMedia("(prefers-reduced-motion: reduce)");
+    const label = () => {
+      const dark = root.dataset.theme === "dark";
+      toggle.setAttribute("aria-pressed", String(dark));
+      toggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    };
+    label();
+
+    toggle.addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      const swap = () => { root.dataset.theme = next; label(); };
+      try { localStorage.setItem("theme", next); } catch {}
+      if (!document.startViewTransition || still.matches) return swap();
+
+      const box = toggle.getBoundingClientRect();
+      const x = box.left + box.width / 2, y = box.top + box.height / 2;
+      const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      root.style.setProperty("--vx", `${x}px`);
+      root.style.setProperty("--vy", `${y}px`);
+
+      document.startViewTransition(swap).ready.then(() => {
+        const timing = { duration: 1000, easing: "cubic-bezier(0.7, 0, 0.2, 1)" }; // slow start so the sphere reads, then settles
+        root.animate({
+          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`],
+          transform: ["scale(1.12)", "scale(1)"],
+        }, { ...timing, pseudoElement: "::view-transition-new(root)" });
+        root.animate({
+          transform: ["scale(1)", "scale(0.92)"],
+          filter: ["brightness(1)", "brightness(0.55)"],
+        }, { ...timing, pseudoElement: "::view-transition-old(root)" });
+      });
+    });
   </script>
 </body>
 </html>
