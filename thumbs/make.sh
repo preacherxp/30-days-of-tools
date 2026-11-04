@@ -1,18 +1,26 @@
 #!/bin/sh
-# Renders every entry in thumbs.json to assets/thumbs/<slug>.png with headless Chrome.
-# Usage: thumbs/make.sh [slug]   (all thumbnails when no slug is given)
+# Renders every entry in thumbs.json with headless Chrome:
+#   assets/thumbs/<slug>.png  800×600, the calendar tile (tight crop)
+#   assets/heroes/<slug>.png  1600×1200, the README hero (the "hero" crop, rendered at 2×)
+# Usage: thumbs/make.sh [slug]   (everything when no slug is given)
 set -eu
 cd "$(dirname "$0")"
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 PROFILE="$(mktemp -d)"
 trap 'rm -rf "$PROFILE"' EXIT
-mkdir -p ../assets/thumbs
+mkdir -p ../assets/thumbs ../assets/heroes
 
-jq -r '.[] | [.slug, .src, .x, .y, .w] | @tsv' thumbs.json | while IFS="$(printf '\t')" read -r slug src x y w; do
-  [ $# -gt 0 ] && [ "$1" != "$slug" ] && continue
+render() { # out scale src x y w
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
     --user-data-dir="$PROFILE" --virtual-time-budget=3000 --window-size=800,600 \
-    --screenshot="../assets/thumbs/$slug.png" \
-    "file://$PWD/template.html?src=$src&x=$x&y=$y&w=$w" >/dev/null 2>&1
-  echo "assets/thumbs/$slug.png"
+    --force-device-scale-factor="$2" --screenshot="$1" \
+    "file://$PWD/template.html?src=$3&x=$4&y=$5&w=$6" >/dev/null 2>&1
+  echo "${1#../}"
+}
+
+jq -r '.[] | [.slug, .src, .x, .y, .w, (.hero.x // ""), (.hero.y // ""), (.hero.w // "")] | @tsv' thumbs.json |
+while IFS="$(printf '\t')" read -r slug src x y w hx hy hw; do
+  [ $# -gt 0 ] && [ "$1" != "$slug" ] && continue
+  render "../assets/thumbs/$slug.png" 1 "$src" "$x" "$y" "$w"
+  [ -n "$hw" ] && render "../assets/heroes/$slug.png" 2 "$src" "$hx" "$hy" "$hw"
 done

@@ -94,12 +94,14 @@
     .theme .i-sun, [data-theme="dark"] .theme .i-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
     [data-theme="dark"] .theme .i-sun { opacity: 1; transform: none; }
 
-    /* Theme switch: the new theme grows out of the button as a sphere while the old page sinks back. */
+    /* Theme switch: the new theme grows out of the button as a sphere while the old page dims. */
     ::view-transition-old(root), ::view-transition-new(root) {
       animation: none; mix-blend-mode: normal;
       transform-origin: var(--vx, 50%) var(--vy, 50%);
     }
     ::view-transition-old(root) { z-index: 1; }
+    /* Colours swap in one frame during the switch; per element fades would lag behind the sphere. */
+    .theming *, .theming *::before, .theming *::after { transition: none !important; }
     ::view-transition-new(root) { z-index: 2; }
 
     .hero { padding: 64px 0 48px; }
@@ -396,8 +398,10 @@
     toggle.addEventListener("click", () => {
       const next = root.dataset.theme === "dark" ? "light" : "dark";
       const swap = () => { root.dataset.theme = next; label(); };
+      root.classList.add("theming");
+      const settle = () => requestAnimationFrame(() => root.classList.remove("theming"));
       try { localStorage.setItem("theme", next); } catch {}
-      if (!document.startViewTransition || still.matches) return swap();
+      if (!document.startViewTransition || still.matches) { swap(); return settle(); }
 
       const box = toggle.getBoundingClientRect();
       const x = box.left + box.width / 2, y = box.top + box.height / 2;
@@ -405,16 +409,16 @@
       root.style.setProperty("--vx", `${x}px`);
       root.style.setProperty("--vy", `${y}px`);
 
-      document.startViewTransition(swap).ready.then(() => {
+      const transition = document.startViewTransition(swap);
+      transition.finished.finally(settle);
+      transition.ready.then(() => {
         const timing = { duration: 1000, easing: "cubic-bezier(0.7, 0, 0.2, 1)" }; // slow start so the sphere reads, then settles
         root.animate({
           clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`],
-          transform: ["scale(1.12)", "scale(1)"],
+          transform: ["scale(1.06)", "scale(1)"],
         }, { ...timing, pseudoElement: "::view-transition-new(root)" });
-        root.animate({
-          transform: ["scale(1)", "scale(0.92)"],
-          filter: ["brightness(1)", "brightness(0.55)"],
-        }, { ...timing, pseudoElement: "::view-transition-old(root)" });
+        // The old page only dims: scaling it down would uncover its edges.
+        root.animate({ filter: ["brightness(1)", "brightness(0.7)"] }, { ...timing, pseudoElement: "::view-transition-old(root)" });
       });
     });
   </script>
