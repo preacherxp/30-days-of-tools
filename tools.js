@@ -41,4 +41,12 @@ window.TOOLS = [
     stack: "TypeScript · browser",
     image: "assets/thumbs/archigraph.png",
   },
+  {
+    day: 6,
+    name: "groove",
+    repo: "preacherxp/groove",
+    blurb: "A Chrome extension that copies the component path of any element, like App > Sidebar > NavItem, from React, Vue, Angular and Svelte apps.",
+    stack: "TypeScript · Chrome",
+    image: "assets/thumbs/groove.png",
+  },
 ];
