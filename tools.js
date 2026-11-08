@@ -49,4 +49,12 @@ window.TOOLS = [
     stack: "TypeScript · Chrome",
     image: "assets/thumbs/groove.png",
   },
+  {
+    day: 7,
+    name: "super-docker",
+    repo: "preacherxp/super-docker",
+    blurb: "A fast, keyboard-first terminal UI for Docker containers, Compose projects, images, volumes and networks.",
+    stack: "Rust · macOS, Linux",
+    image: "assets/thumbs/super-docker.png",
+  },
 ];

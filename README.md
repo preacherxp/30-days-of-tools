@@ -16,6 +16,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 4 | [Sieve](https://github.com/preacherxp/sieve) | Runs only the JVM tests a change can affect |
 | 5 | [Archigraph](https://github.com/preacherxp/archigraph) | An architecture diagram editor that ships as one self-contained HTML file |
 | 6 | [groove](https://github.com/preacherxp/groove) | A Chrome extension that copies the component path of any element from React, Vue, Angular and Svelte apps |
+| 7 | [super-docker](https://github.com/preacherxp/super-docker) | A keyboard-first terminal UI for Docker containers, Compose projects, images, volumes and networks |
 
 ## Adding a day
 

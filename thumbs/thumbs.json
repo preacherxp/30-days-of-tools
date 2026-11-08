@@ -4,5 +4,6 @@
   {"slug": "element-snap", "src": "src/element-snap.png", "x": 425, "y": 385, "w": 1000, "hero": {"src": "src/element-snap-pricing.png", "x": 0, "y": 0, "w": 2560, "h": 1880}},
   {"slug": "sieve", "src": "src/sieve.png", "x": 1512, "y": 152, "w": 908, "hero": {"src": "src/sieve-site-cli.png", "x": 428, "y": 100, "w": 2024, "h": 1186}},
   {"slug": "archigraph", "src": "src/archigraph.png", "x": 630, "y": 250, "w": 420, "hero": {"src": "src/archigraph-light.png", "x": 0, "y": 0, "w": 1440, "h": 900}},
-  {"slug": "groove", "src": "src/groove.png", "x": 1940, "y": 720, "w": 620, "hero": {"x": 0, "y": 0, "w": 2560, "h": 1290}}
+  {"slug": "groove", "src": "src/groove.png", "x": 1940, "y": 720, "w": 620, "hero": {"x": 0, "y": 0, "w": 2560, "h": 1290}},
+  {"slug": "super-docker", "src": "src/super-docker.png", "x": 16, "y": 8, "w": 760, "hero": {"x": 0, "y": 0, "w": 1200, "h": 760}}
 ]
