@@ -5,5 +5,6 @@
   {"slug": "sieve", "src": "src/sieve.png", "x": 1512, "y": 152, "w": 908, "hero": {"src": "src/sieve-site-cli.png", "x": 428, "y": 100, "w": 2024, "h": 1186}},
   {"slug": "archigraph", "src": "src/archigraph.png", "x": 630, "y": 250, "w": 420, "hero": {"src": "src/archigraph-light.png", "x": 0, "y": 0, "w": 1440, "h": 900}},
   {"slug": "groove", "src": "src/groove.png", "x": 1940, "y": 720, "w": 620, "hero": {"x": 0, "y": 0, "w": 2560, "h": 1290}},
-  {"slug": "super-docker", "src": "src/super-docker.png", "x": 16, "y": 8, "w": 760, "hero": {"x": 0, "y": 0, "w": 1200, "h": 760}}
+  {"slug": "super-docker", "src": "src/super-docker.png", "x": 16, "y": 8, "w": 760, "hero": {"x": 0, "y": 0, "w": 1200, "h": 760}},
+  {"slug": "mucha", "src": "src/mucha.png", "x": 730, "y": 2304, "w": 1040, "hero": {"src": "src/mucha-sealed.png", "x": 240, "y": 3106, "w": 2400, "h": 1250}}
 ]

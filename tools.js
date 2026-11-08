@@ -57,4 +57,12 @@ window.TOOLS = [
     stack: "Rust · macOS, Linux",
     image: "assets/thumbs/super-docker.png",
   },
+  {
+    day: 8,
+    name: "Mucha",
+    repo: "preacherxp/mucha",
+    blurb: "A local web UI for kubeseal that catches trailing newlines, double base64 and wrong-cluster mistakes before they are sealed.",
+    stack: "Go · browser",
+    image: "assets/thumbs/mucha.png",
+  },
 ];
