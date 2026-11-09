@@ -65,4 +65,12 @@ window.TOOLS = [
     stack: "Go · browser",
     image: "assets/thumbs/mucha.png",
   },
+  {
+    day: 9,
+    name: "Thermal",
+    repo: "preacherxp/thermal",
+    blurb: "Benchmarks your CPU and GPU under monitored load, records temperatures and compares runs before and after a fix, with PDF and PNG reports.",
+    stack: "Go · macOS, Windows, Linux",
+    image: "assets/thumbs/thermal.png",
+  },
 ];

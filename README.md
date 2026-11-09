@@ -18,6 +18,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 6 | [groove](https://github.com/preacherxp/groove) | A Chrome extension that copies the component path of any element from React, Vue, Angular and Svelte apps |
 | 7 | [super-docker](https://github.com/preacherxp/super-docker) | A keyboard-first terminal UI for Docker containers, Compose projects, images, volumes and networks |
 | 8 | [Mucha](https://github.com/preacherxp/mucha) | A local web UI for kubeseal that catches trailing newlines, double base64 and wrong-cluster mistakes before they are sealed |
+| 9 | [Thermal](https://github.com/preacherxp/thermal) | Benchmarks your CPU and GPU under monitored load and compares temperature runs before and after a fix |
 
 ## Adding a day
 
