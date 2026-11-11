@@ -19,6 +19,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 7 | [super-docker](https://github.com/preacherxp/super-docker) | A keyboard-first terminal UI for Docker containers, Compose projects, images, volumes and networks |
 | 8 | [Mucha](https://github.com/preacherxp/mucha) | A local web UI for kubeseal that catches trailing newlines, double base64 and wrong-cluster mistakes before they are sealed |
 | 9 | [Thermal](https://github.com/preacherxp/thermal) | Benchmarks your CPU and GPU under monitored load and compares temperature runs before and after a fix |
+| 10 | [portkill](https://github.com/preacherxp/portkill) | A macOS menu bar app that shows every listening port, which project or Docker container owns it, and stops it with one click |
 
 ## Adding a day
 

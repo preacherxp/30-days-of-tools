@@ -73,4 +73,12 @@ window.TOOLS = [
     stack: "Go · macOS, Windows, Linux",
     image: "assets/thumbs/thermal.png",
   },
+  {
+    day: 10,
+    name: "portkill",
+    repo: "preacherxp/portkill",
+    blurb: "A macOS menu bar app that shows every listening port, which project or Docker container owns it, and stops it with one click.",
+    stack: "Swift · macOS",
+    image: "assets/thumbs/portkill.png",
+  },
 ];
