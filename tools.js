@@ -81,4 +81,12 @@ window.TOOLS = [
     stack: "Swift · macOS",
     image: "assets/thumbs/portkill.png",
   },
+  {
+    day: 11,
+    name: "envdiff",
+    repo: "preacherxp/envdiff",
+    blurb: "Compares environment variables across .env files, Kubernetes ConfigMaps and Secrets, and Docker Compose services, and names the near-misses: trailing newlines, stray spaces, quotes, case and double base64.",
+    stack: "Go · macOS, Linux, Windows",
+    image: "assets/thumbs/envdiff.png",
+  },
 ];

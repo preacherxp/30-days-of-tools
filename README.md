@@ -20,6 +20,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 8 | [Mucha](https://github.com/preacherxp/mucha) | A local web UI for kubeseal that catches trailing newlines, double base64 and wrong-cluster mistakes before they are sealed |
 | 9 | [Thermal](https://github.com/preacherxp/thermal) | Benchmarks your CPU and GPU under monitored load and compares temperature runs before and after a fix |
 | 10 | [portkill](https://github.com/preacherxp/portkill) | A macOS menu bar app that shows every listening port, which project or Docker container owns it, and stops it with one click |
+| 11 | [envdiff](https://github.com/preacherxp/envdiff) | Compares .env files, Kubernetes ConfigMaps and Secrets, and Compose services, and names near-misses like trailing newlines, quotes and double base64 |
 
 ## Adding a day
 
