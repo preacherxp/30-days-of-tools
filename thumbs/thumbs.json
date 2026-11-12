@@ -9,5 +9,6 @@
   {"slug": "mucha", "src": "src/mucha.png", "x": 730, "y": 2304, "w": 1040, "hero": {"src": "src/mucha-sealed.png", "x": 240, "y": 3106, "w": 2400, "h": 1250}},
   {"slug": "thermal", "src": "src/thermal.png", "x": 20, "y": 124, "w": 720, "hero": {"src": "src/thermal-results.png", "x": 0, "y": 0, "w": 1200, "h": 860}},
   {"slug": "portkill", "src": "src/portkill.png", "x": 40, "y": 572, "w": 640, "hero": {"x": 0, "y": 0, "w": 760, "h": 1078}},
-  {"slug": "envdiff", "src": "src/envdiff.png", "x": 1326, "y": 780, "w": 1380, "hero": {"x": 80, "y": 80, "w": 2720, "h": 1916}}
+  {"slug": "envdiff", "src": "src/envdiff.png", "x": 1326, "y": 780, "w": 1380, "hero": {"x": 80, "y": 80, "w": 2720, "h": 1916}},
+  {"slug": "the-gauntlet", "src": "src/the-gauntlet.png", "x": 992, "y": 576, "w": 1472, "hero": {"x": 0, "y": 0, "w": 3200, "h": 1800}}
 ]

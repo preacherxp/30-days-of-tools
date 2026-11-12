@@ -21,6 +21,7 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 9 | [Thermal](https://github.com/preacherxp/thermal) | Benchmarks your CPU and GPU under monitored load and compares temperature runs before and after a fix |
 | 10 | [portkill](https://github.com/preacherxp/portkill) | A macOS menu bar app that shows every listening port, which project or Docker container owns it, and stops it with one click |
 | 11 | [envdiff](https://github.com/preacherxp/envdiff) | Compares .env files, Kubernetes ConfigMaps and Secrets, and Compose services, and names near-misses like trailing newlines, quotes and double base64 |
+| 12 | [The Gauntlet](https://github.com/preacherxp/the-gauntlet) | A relief day: a chess roguelite in the browser with spells, small boards and named pawns, every asset made by code. [Play it](https://preacherxp.github.io/the-gauntlet/) |
 
 ## Adding a day
 

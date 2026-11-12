@@ -89,4 +89,12 @@ window.TOOLS = [
     stack: "Go · macOS, Linux, Windows",
     image: "assets/thumbs/envdiff.png",
   },
+  {
+    day: 12,
+    name: "The Gauntlet",
+    repo: "preacherxp/the-gauntlet",
+    blurb: "A relief day, so a game: a chess roguelite with a deck of spells and an army of named pawns that each move, fight and die their own way. Every asset is made by code.",
+    stack: "three.js · browser",
+    image: "assets/thumbs/the-gauntlet.png",
+  },
 ];
