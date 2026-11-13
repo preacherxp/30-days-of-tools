@@ -11,5 +11,5 @@
   {"slug": "portkill", "src": "src/portkill.png", "x": 40, "y": 572, "w": 640, "hero": {"x": 0, "y": 0, "w": 760, "h": 1078}},
   {"slug": "envdiff", "src": "src/envdiff.png", "x": 1326, "y": 780, "w": 1380, "hero": {"x": 80, "y": 80, "w": 2720, "h": 1916}},
   {"slug": "the-gauntlet", "src": "src/the-gauntlet.png", "x": 992, "y": 576, "w": 1472, "hero": {"x": 0, "y": 0, "w": 3200, "h": 1800}},
-  {"slug": "sheaf", "src": "src/sheaf.png", "x": 236, "y": 444, "w": 1000, "hero": {"x": 0, "y": 0, "w": 2400, "h": 1400}}
+  {"slug": "sheaf", "src": "src/sheaf.png", "x": 272, "y": 170, "w": 1100, "hero": {"x": 240, "y": 0, "w": 1520, "h": 1280}}
 ]
