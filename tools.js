@@ -97,4 +97,12 @@ window.TOOLS = [
     stack: "three.js · browser",
     image: "assets/thumbs/the-gauntlet.png",
   },
+  {
+    day: 13,
+    name: "sheaf",
+    repo: "preacherxp/sheaf",
+    blurb: "One link for the same pull request opened in many repositories: every one's state, checks and review, and who has marked it 👀 seen. Runs in your browser and talks only to GitHub.",
+    stack: "JavaScript · browser",
+    image: "assets/thumbs/sheaf.png",
+  },
 ];
