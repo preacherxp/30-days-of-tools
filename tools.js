@@ -105,4 +105,12 @@ window.TOOLS = [
     stack: "JavaScript · browser",
     image: "assets/thumbs/sheaf.png",
   },
+  {
+    day: 14,
+    name: "shh",
+    repo: "preacherxp/shh",
+    blurb: "Share a password through a link that opens once by default. The browser encrypts it before it leaves your device.",
+    stack: "TypeScript · Bun, browser",
+    image: "assets/thumbs/shh.png",
+  },
 ];
