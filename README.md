@@ -22,8 +22,13 @@ A tool building challenge: one new open source tool every day of November 2026, 
 | 10 | [portkill](https://github.com/preacherxp/portkill) | A macOS menu bar app that shows every listening port, which project or Docker container owns it, and stops it with one click |
 | 11 | [envdiff](https://github.com/preacherxp/envdiff) | Compares .env files, Kubernetes ConfigMaps and Secrets, and Compose services, and names near-misses like trailing newlines, quotes and double base64 |
 | 12 | [The Gauntlet](https://github.com/preacherxp/the-gauntlet) | A relief day: a chess roguelite in the browser with spells, small boards and named pawns, every asset made by code. [Play it](https://preacherxp.github.io/the-gauntlet/) |
-| 13 | [sheaf](https://github.com/preacherxp/sheaf) | One link for the same pull request across many repositories, with each one's state, checks and review, and who has marked it seen. [Open it](https://preacherxp.github.io/sheaf/) |
+| 13 | [sheaf](https://github.com/preacherxp/sheaf) | A standalone CLI that finds every pull request for a ticket key across your GitHub repositories and opens them as one offline review checklist |
 | 14 | [shh](https://github.com/preacherxp/shh) | Share a secret through a link that expires and opens once by default. The browser encrypts the secret before sending it. [Try it](https://shh.purecode.sh/) |
+| 15 | [whyloud](https://github.com/preacherxp/whyloud) | A command line tool that answers "why is my computer so loud?" by naming the job behind the fan noise and the command that stops it |
+| 16 | [vl-format](https://github.com/preacherxp/vl-format) | A fast whitespace formatter for Kotlin and Java that works from a lexer and refuses to write a file if a token changed |
+| 17 | [Dogwatch](https://github.com/preacherxp/dogwatch) | A macOS menu bar app that shows how much is left on your AI subscriptions and API accounts, and when each resets |
+| 18 | [Petri](https://github.com/preacherxp/petri) | Scores every Claude Code session from its transcript, names what cost the most, and grows each session into an organism you can replay |
+| 19 | [duet](https://github.com/preacherxp/duet) | Runs two Codex sessions on one task: one plans and reviews, the other implements in its own Git worktree, and you approve both steps |
 
 ## Adding a day
 

@@ -12,5 +12,10 @@
   {"slug": "envdiff", "src": "src/envdiff.png", "x": 1326, "y": 780, "w": 1380, "hero": {"x": 80, "y": 80, "w": 2720, "h": 1916}},
   {"slug": "the-gauntlet", "src": "src/the-gauntlet.png", "x": 992, "y": 576, "w": 1472, "hero": {"x": 0, "y": 0, "w": 3200, "h": 1800}},
   {"slug": "sheaf", "src": "src/sheaf.png", "x": 200, "y": 30, "w": 1100, "hero": {"x": 240, "y": 0, "w": 1520, "h": 1280}},
-  {"slug": "shh", "src": "src/shh.png", "x": 816, "y": 284, "w": 960, "hero": {"x": 0, "y": 120, "w": 1840, "h": 1920}}
+  {"slug": "shh", "src": "src/shh.png", "x": 816, "y": 284, "w": 960, "hero": {"x": 0, "y": 120, "w": 1840, "h": 1920}},
+  {"slug": "whyloud", "src": "src/whyloud.png", "x": 0, "y": 0, "w": 1350},
+  {"slug": "vl-format", "src": "src/vl-format.png", "x": 0, "y": 0, "w": 3020},
+  {"slug": "dogwatch", "src": "src/dogwatch.png", "x": 0, "y": 0, "w": 756},
+  {"slug": "petri", "src": "src/petri.png", "x": 470, "y": 190, "w": 1500},
+  {"slug": "duet", "src": "src/duet.png", "x": 120, "y": 810, "w": 760}
 ]
